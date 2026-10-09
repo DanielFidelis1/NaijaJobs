@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Browse small jobs and freelance opportunities on NaijaJobs.">
+
+    <title>Find Jobs - NaijaJobs</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="nj-dashboard-body nj-browse-body">
+
+    <div class="nj-dashboard-shell">
+
+        <!-- SIDEBAR -->
+        <aside class="nj-sidebar">
+
+            <a href="dashboard.html" class="nj-brand">
+                Naija<span>Jobs</span>
+            </a>
+
+            <p class="nj-sidebar-label">WORKSPACE</p>
+
+            <nav class="nj-sidebar-nav">
+
+                <a href="dashboard.html" class="nj-side-link">
+                    <span>▦</span> Dashboard
+                </a>
+
+                <a href="browse.html"
+                   class="nj-side-link active">
+                    <span>⌕</span> Find Jobs
+                </a>
+
+                <a href="applications.html" class="nj-side-link">
+                    <span>▤</span> My Applications
+                </a>
+
+                <a href="my-jobs.html" class="nj-side-link">
+                    <span>▣</span> My Jobs
+                </a>
+
+                <a href="post-job.html" class="nj-side-link">
+                    <span>＋</span> Post a Job
+                </a>
+
+                <a href="messages.html" class="nj-side-link">
+                    <span>✉</span> Messages
+                </a>
+
+                <a href="profile.html" class="nj-side-link">
+                    <span>◎</span> My Profile
+                </a>
+
+            </nav>
+
+            <div class="nj-sidebar-bottom">
+
+                <div class="nj-sidebar-help">
+                    <strong>Have work to share?</strong>
+                    <p>Connect with people who can get the job done.</p>
+                    <a href="post-job.html">Post a job →</a>
+                </div>
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="nj-logout-button logout-button">
+                    ↪ Log Out
+                </button>
+
+            </div>
+
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="nj-dashboard-main">
+
+            <header class="nj-topbar">
+
+                <div>
+                    <p class="nj-topbar-label">JOB SEEKER WORKSPACE</p>
+                    <h2>Find Jobs</h2>
+                </div>
+
+                <div class="nj-topbar-actions">
+
+                    <a href="applications.html"
+                       class="nj-small-action-button">
+                        My Applications
+                    </a>
+
+                    <a href="profile.html"
+                       class="nj-avatar-link"
+                       aria-label="My Profile">
+                        ◎
+                    </a>
+
+                </div>
+
+            </header>
+
+            <div class="nj-dashboard-content">
+
+                <!-- WELCOME BANNER -->
+                <section class="nj-welcome-banner">
+
+                    <div>
+                        <span class="nj-banner-eyebrow">
+                            YOUR NEXT OPPORTUNITY STARTS HERE
+                        </span>
+
+                        <h1>Find work. Earn money.</h1>
+
+                        <p>
+                            Discover opportunities, put your skills to work,
+                            and connect with people who need your services.
+                        </p>
+
+                        <a href="#job-listings"
+                           class="nj-banner-button">
+                            Explore Jobs →
+                        </a>
+                    </div>
+
+                    <div class="nj-banner-decoration"
+                         aria-hidden="true">
+                        💼
+                    </div>
+
+                </section>
+
+                <!-- SEARCH -->
+                <section class="nj-browse-search-section">
+
+                    <div class="nj-section-heading">
+                        <div>
+                            <h2>Find your next job</h2>
+                            <p>
+                                Search opportunities that match your skills.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="nj-browse-search-card">
+
+                        <div class="nj-browse-search-field">
+
+                            <label for="job-search">
+                                Search jobs
+                            </label>
+
+                            <div class="nj-browse-input-wrap">
+                                <span aria-hidden="true">⌕</span>
+
+                                <input
+                                    type="text"
+                                    id="job-search"
+                                    placeholder="e.g. graphic design, writing..."
+                                >
+                            </div>
+
+                        </div>
+
+                        <div class="nj-browse-search-field">
+
+                            <label for="category-filter">
+                                Job category
+                            </label>
+
+                            <select id="category-filter">
+
+                                <option value="">All Categories</option>
+                                <option value="Graphic Design">Graphic Design</option>
+                                <option value="Writing">Writing</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="Photography">Photography</option>
+                                <option value="Video Editing">Video Editing</option>
+                                <option value="Tutoring">Tutoring</option>
+                                <option value="Tech Support">Tech Support</option>
+                                <option value="Other">Other</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- JOB LISTINGS -->
+                <section class="nj-browse-listings-section"
+                         id="job-listings">
+
+                    <div class="nj-section-heading">
+
+                        <div>
+                            <h2>Available Opportunities</h2>
+                            <p>
+                                Explore jobs posted by clients.
+                            </p>
+                        </div>
+
+                        <a href="post-job.html"
+                           class="nj-text-link">
+                            + Post a Job
+                        </a>
+
+                    </div>
+
+                    <div id="jobs-container"
+                         class="jobs-grid nj-browse-jobs-grid">
+
+                        <div class="nj-browse-loading">
+                            <span class="nj-loading-spinner"></span>
+                            <p>Loading available jobs...</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- BOTTOM CTA -->
+                <section class="nj-profile-prompt">
+
+                    <div>
+                        <h2>Have a job to offer?</h2>
+
+                        <p>
+                            Post your job on NaijaJobs and connect
+                            with people who have the skills you need.
+                        </p>
+                    </div>
+
+                    <a href="post-job.html"
+                       class="nj-primary-button">
+                        + Post a Job
+                    </a>
+
+                </section>
+
+                <footer class="nj-dashboard-footer">
+                    <p>
+                        © 2026 NaijaJobs. Connecting skills with opportunities.
+                    </p>
+                </footer>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>

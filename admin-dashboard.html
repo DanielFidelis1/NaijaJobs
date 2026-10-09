@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - NaijaJobs</title>
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .admin-page {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .admin-header h1 {
+            margin: 0;
+            color: #635bff;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 20px;
+        }
+
+        .admin-card {
+            background: white;
+            padding: 24px;
+            border-radius: 14px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .admin-card h2 {
+            margin-top: 0;
+            font-size: 17px;
+        }
+
+        .admin-number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #635bff;
+        }
+
+        .admin-button {
+            display: inline-block;
+            background: #635bff;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .admin-button:hover {
+            opacity: 0.9;
+        }
+
+        #admin-message {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main id="admin-dashboard" class="admin-page" hidden>
+
+        <header class="admin-header">
+            <div>
+                <h1>NaijaJobs Admin</h1>
+                <p>Manage your platform from one place.</p>
+            </div>
+
+            <button id="admin-logout" class="admin-button" type="button">
+                Log out
+            </button>
+        </header>
+
+        <p id="admin-message" role="status">Verifying administrator access...</p>
+
+        <section class="admin-grid">
+
+            <article class="admin-card">
+                <h2>Registered Users</h2>
+                <p class="admin-number" id="admin-user-count">—</p>
+            </article>
+
+            <article class="admin-card">
+                <h2>Job Listings</h2>
+                <p class="admin-number" id="admin-job-count">—</p>
+            </article>
+
+            <article class="admin-card">
+                <h2>Admin Access</h2>
+                <p>Restricted to authorized administrators.</p>
+            </article>
+
+        </section>
+        
+        <section class="admin-card" style="margin-top: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                <div>
+                    <h2>Registered Users</h2>
+                    <p>View NaijaJobs accounts and profile information.</p>
+                </div>
+
+                <button
+                    type="button"
+                    id="refresh-users"
+                    class="admin-button"
+                >
+                    Refresh Users
+                </button>
+            </div>
+
+            <p id="users-message" role="status">
+                Loading users...
+            </p>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    
+<thead>
+    <tr>
+        <th>Name</th>
+        <th>Account Type</th>
+        <th>Location</th>
+        <th>Skills</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+</thead>
+<tbody id="admin-users-list">
+    <tr>
+        <td colspan="6">Loading users...</td>
+    </tr>
+</tbody>
+                </table>
+            </div>
+        </section>
+<!-- JOB MANAGEMENT -->
+<section class="admin-card" style="margin-top: 24px;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+
+        <div>
+            <h2>Job Management</h2>
+            <p>View job listings posted on NaijaJobs.</p>
+        </div>
+
+        <button
+            type="button"
+            id="refresh-jobs"
+            class="admin-button"
+        >
+            Refresh Jobs
+        </button>
+
+    </div>
+
+    <p id="jobs-message" role="status">
+        Loading job listings...
+    </p>
+
+    <div style="overflow-x: auto;">
+
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+
+            <thead>
+    <tr>
+        <th style="padding: 12px; border-bottom: 1px solid #ddd;">Job Title</th>
+        <th style="padding: 12px; border-bottom: 1px solid #ddd;">Category</th>
+        <th style="padding: 12px; border-bottom: 1px solid #ddd;">Location</th>
+        <th style="padding: 12px; border-bottom: 1px solid #ddd;">Actions</th>
+    </tr>
+</thead>
+
+
+            <tbody id="admin-jobs-list">
+                <tr>
+                    <td colspan="4" style="padding: 12px;">
+                        Loading job listings...
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </div>
+
+</section>
+<!-- ADMIN ACTIVITY LOG -->
+<section class="admin-card" style="margin-top: 24px;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+        <div>
+            <h2>Admin Activity Log</h2>
+            <p>Review administrative actions on NaijaJobs.</p>
+        </div>
+
+        <button
+            type="button"
+            id="refresh-activity"
+            class="admin-button"
+        >
+            Refresh Log
+        </button>
+    </div>
+
+    <p id="activity-message" role="status">
+        Loading activity...
+    </p>
+
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr>
+                    <th style="padding: 12px; border-bottom: 1px solid #ddd;">Date</th>
+                    <th style="padding: 12px; border-bottom: 1px solid #ddd;">Action</th>
+                    <th style="padding: 12px; border-bottom: 1px solid #ddd;">Target</th>
+                    <th style="padding: 12px; border-bottom: 1px solid #ddd;">Details</th>
+                </tr>
+            </thead>
+
+            <tbody id="admin-activity-list">
+                <tr>
+                    <td colspan="4" style="padding: 12px;">
+                        Loading activity...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</section>
+
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

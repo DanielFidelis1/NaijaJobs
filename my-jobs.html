@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Manage your NaijaJobs listings, review applicants and create new job opportunities."
+    >
+
+    <meta name="theme-color" content="#635bff">
+
+    <title>Employer Workspace - NaijaJobs</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="nj-dashboard-body nj-employer-body">
+
+    <div class="nj-dashboard-shell">
+
+        <!-- SIDEBAR -->
+
+        <aside class="nj-sidebar">
+
+            <a href="dashboard.html" class="nj-brand">
+                Naija<span>Jobs</span>
+            </a>
+
+            <div class="nj-sidebar-label">EMPLOYER WORKSPACE</div>
+
+            <nav class="nj-sidebar-nav" aria-label="Employer navigation">
+
+                <a href="my-jobs.html" class="nj-side-link active">
+                    <span class="nj-side-icon">▣</span>
+                    <span>My Jobs</span>
+                </a>
+
+                <a href="post-job.html" class="nj-side-link">
+                    <span class="nj-side-icon">＋</span>
+                    <span>Post a Job</span>
+                </a>
+
+                <a href="applications.html" class="nj-side-link">
+                    <span class="nj-side-icon">▤</span>
+                    <span>Applications</span>
+                </a>
+
+                <a href="messages.html" class="nj-side-link">
+                    <span class="nj-side-icon">✉</span>
+                    <span>Messages</span>
+                </a>
+
+                <a href="profile.html" class="nj-side-link">
+                    <span class="nj-side-icon">♙</span>
+                    <span>My Profile</span>
+                </a>
+
+                <a href="browse.html" class="nj-side-link">
+                    <span class="nj-side-icon">⌕</span>
+                    <span>Find Jobs</span>
+                </a>
+
+            </nav>
+
+            <div class="nj-sidebar-bottom">
+
+                <div class="nj-help-card">
+                    <div class="nj-help-icon">✦</div>
+                    <h3>Find the right people</h3>
+                    <p>Publish your opportunities and connect with skilled workers.</p>
+                    <a href="post-job.html">Create a listing →</a>
+                </div>
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="nj-logout-button logout-button"
+                >
+                    <span>↪</span>
+                    Logout
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+
+        <main class="nj-dashboard-main">
+
+            <!-- TOP BAR -->
+
+            <header class="nj-topbar">
+
+                <div>
+                    <p class="nj-eyebrow">EMPLOYER WORKSPACE</p>
+                    <h1>My Jobs</h1>
+                </div>
+
+                <div class="nj-topbar-right">
+
+                    <a href="messages.html" class="nj-message-button">
+                        <span>✉</span>
+                        Messages
+                    </a>
+
+                    <a
+                        href="post-job.html"
+                        class="nj-employer-post-button"
+                    >
+                        + Post a Job
+                    </a>
+
+                </div>
+
+            </header>
+
+
+            <div class="nj-dashboard-content">
+
+                <!-- WELCOME BANNER -->
+
+                <section class="nj-welcome-banner">
+
+                    <div class="nj-welcome-copy">
+
+                        <span class="nj-welcome-tag">
+                            YOUR CLIENT WORKSPACE
+                        </span>
+
+                        <h2>Manage your opportunities</h2>
+
+                        <p>
+                            Review your job listings, keep track of applicants,
+                            and find the right people for your work.
+                        </p>
+
+                        <a href="post-job.html" class="nj-primary-button">
+                            Create a new job
+                            <span>→</span>
+                        </a>
+
+                    </div>
+
+                    <div class="nj-welcome-art" aria-hidden="true">
+                        <div class="nj-art-circle nj-art-circle-one"></div>
+                        <div class="nj-art-circle nj-art-circle-two"></div>
+
+                        <div class="nj-art-card">
+                            <span class="nj-art-check">✓</span>
+                            <div>
+                                <strong>Your next hire starts here</strong>
+                                <small>Manage your listings with ease</small>
+                            </div>
+                        </div>
+
+                        <div class="nj-art-star">✦</div>
+                    </div>
+
+                </section>
+
+
+                <!-- OVERVIEW -->
+
+                <section class="nj-dashboard-section">
+
+                    <div class="nj-section-heading">
+                        <div>
+                            <h2>Employer overview</h2>
+                            <p>Shortcuts to help you manage your work.</p>
+                        </div>
+                    </div>
+
+                    <div class="nj-overview-grid">
+
+                        <a href="my-jobs.html" class="nj-overview-card">
+                            <div class="nj-overview-icon nj-icon-purple">▣</div>
+
+                            <div class="nj-overview-text">
+                                <h3>My Job Listings</h3>
+                                <p>View and manage your posted opportunities.</p>
+                            </div>
+
+                            <span class="nj-card-arrow">→</span>
+                        </a>
+
+                        <a href="applications.html" class="nj-overview-card">
+                            <div class="nj-overview-icon nj-icon-green">▤</div>
+
+                            <div class="nj-overview-text">
+                                <h3>Applications</h3>
+                                <p>Review applications using your existing workflow.</p>
+                            </div>
+
+                            <span class="nj-card-arrow">→</span>
+                        </a>
+
+                        <a href="messages.html" class="nj-overview-card">
+                            <div class="nj-overview-icon nj-icon-orange">✉</div>
+
+                            <div class="nj-overview-text">
+                                <h3>Messages</h3>
+                                <p>Keep in touch with other users.</p>
+                            </div>
+
+                            <span class="nj-card-arrow">→</span>
+                        </a>
+
+                    </div>
+
+                </section>
+
+
+                <!-- JOB LISTINGS -->
+
+                <section class="nj-dashboard-section nj-employer-jobs-section">
+
+                    <div class="nj-section-heading">
+                        <div>
+                            <h2>Your posted jobs</h2>
+                            <p>Manage your listings and review applicants.</p>
+                        </div>
+
+                        <a
+                            href="post-job.html"
+                            class="nj-small-action-button"
+                        >
+                            + Add job
+                        </a>
+                    </div>
+
+                    <div
+                        id="my-jobs-container"
+                        class="my-jobs-container my-jobs-list-redesign nj-employer-jobs-container"
+                        aria-live="polite"
+                    >
+
+                        <div class="my-jobs-loading">
+                            <span>⏳</span>
+                            <p>Loading your jobs...</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <!-- BOTTOM CTA -->
+
+                <section class="nj-profile-prompt">
+
+                    <div class="nj-profile-prompt-icon">＋</div>
+
+                    <div class="nj-profile-prompt-copy">
+                        <h2>Ready to publish another job?</h2>
+                        <p>
+                            Create a new listing and connect with workers
+                            who have the skills you need.
+                        </p>
+                    </div>
+
+                    <a href="post-job.html" class="nj-secondary-button">
+                        Post a Job →
+                    </a>
+
+                </section>
+
+            </div>
+
+
+            <!-- FOOTER -->
+
+            <footer class="nj-dashboard-footer">
+                <p>© 2026 NaijaJobs. Connecting skills with opportunities.</p>
+                <a href="dashboard.html">Job Seeker Dashboard</a>
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- EXISTING SCRIPTS -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

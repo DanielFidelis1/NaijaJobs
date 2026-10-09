@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Chat with employers and job seekers on NaijaJobs.">
+    <title>Chat - NaijaJobs</title>
+    <link rel="stylesheet" href="css/style.css">
+
+<style>
+    .nj-chat-page {
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 20px;
+    }
+
+    .nj-chat-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 18px;
+        background: #fff;
+        border: 1px solid #e8e7f3;
+        border-radius: 14px 14px 0 0;
+    }
+
+    .nj-chat-back {
+        color: #635bff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .nj-chat-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        background: #eeecff;
+        color: #635bff;
+        font-weight: 700;
+        font-size: 20px;
+    }
+
+    .nj-chat-header h1 {
+        margin: 0;
+        font-size: 18px;
+        color: #252344;
+    }
+
+    .nj-chat-header p {
+        margin: 5px 0 0;
+        color: #777;
+        font-size: 13px;
+    }
+
+    .nj-chat-messages {
+        min-height: 350px;
+        max-height: 55vh;
+        overflow-y: auto;
+        padding: 22px;
+        background: #f7f8fc;
+        border: 1px solid #e8e7f3;
+        border-top: 0;
+    }
+
+    .nj-chat-bubble {
+        max-width: 78%;
+        width: fit-content;
+        padding: 12px 15px;
+        margin-bottom: 14px;
+        border-radius: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .nj-chat-bubble p {
+        margin: 0 0 7px;
+        white-space: pre-wrap;
+    }
+
+    .nj-chat-bubble time {
+        display: block;
+        font-size: 11px;
+        opacity: 0.7;
+        text-align: right;
+    }
+
+    .nj-chat-mine {
+        margin-left: auto;
+        color: #fff;
+        background: #635bff;
+        border-bottom-right-radius: 4px;
+    }
+
+    .nj-chat-theirs {
+        margin-right: auto;
+        color: #252344;
+        background: #fff;
+        border: 1px solid #e8e7f3;
+        border-bottom-left-radius: 4px;
+    }
+
+    .nj-chat-form {
+        display: flex;
+        gap: 10px;
+        padding: 16px;
+        background: #fff;
+        border: 1px solid #e8e7f3;
+        border-top: 0;
+        border-radius: 0 0 14px 14px;
+    }
+
+    .nj-chat-form textarea {
+        flex: 1;
+        min-width: 0;
+        min-height: 46px;
+        max-height: 120px;
+        padding: 12px;
+        border: 1px solid #dcdbea;
+        border-radius: 10px;
+        resize: vertical;
+        font: inherit;
+    }
+
+    .nj-chat-form button {
+        align-self: flex-end;
+        padding: 12px 20px;
+        color: #fff;
+        background: #635bff;
+        border: 0;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+    .nj-chat-form button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .nj-chat-notice {
+        padding: 20px;
+        text-align: center;
+        color: #777;
+    }
+
+    .nj-chat-error {
+        color: #b42318;
+    }
+
+    @media (max-width: 600px) {
+        .nj-chat-page {
+            padding: 10px;
+            margin: 15px auto;
+        }
+
+        .nj-chat-messages {
+            min-height: 300px;
+            padding: 14px;
+        }
+
+        .nj-chat-form {
+            padding: 10px;
+        }
+
+        .nj-chat-form button {
+            padding: 12px;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+    <main class="nj-chat-page">
+        <header class="nj-chat-header">
+            <a class="nj-chat-back" href="messages.html" aria-label="Back to inbox">← Back</a>
+            <div class="nj-chat-avatar" id="chat-avatar">?</div>
+            <div>
+                <h1 id="chat-name">NaijaJobs Chat</h1>
+                <p id="chat-status">Your private conversation</p>
+            </div>
+        </header>
+
+    <div class="nj-chat-messages" id="chat-messages" aria-live="polite">
+        <div class="nj-chat-notice">Loading conversation...</div>
+    </div>
+
+    <form class="nj-chat-form" id="chat-form">
+        <textarea
+            id="chat-input"
+            maxlength="5000"
+            placeholder="Type your message..."
+            aria-label="Your message"
+            required
+        ></textarea>
+        <button type="submit" id="chat-send">Send</button>
+    </form>
+
+    <p id="chat-notice" class="nj-chat-notice" role="status"></p>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

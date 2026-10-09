@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Review and manage job applications on NaijaJobs."
+    >
+
+    <title>Job Applicants - NaijaJobs</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="nj-dashboard-body nj-applicants-body">
+
+    <div class="nj-dashboard-shell">
+
+        <!-- SIDEBAR -->
+        <aside class="nj-sidebar">
+
+            <a href="dashboard.html" class="nj-brand">
+                Naija<span>Jobs</span>
+            </a>
+
+            <div class="nj-sidebar-label">WORKSPACE</div>
+
+            <nav class="nj-sidebar-nav">
+
+                <a href="dashboard.html" class="nj-side-link">
+                    <span class="nj-nav-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="browse.html" class="nj-side-link">
+                    <span class="nj-nav-icon">⌕</span>
+                    <span>Find Jobs</span>
+                </a>
+
+                <a href="applications.html" class="nj-side-link">
+                    <span class="nj-nav-icon">▤</span>
+                    <span>My Applications</span>
+                </a>
+
+                <a href="my-jobs.html" class="nj-side-link active">
+                    <span class="nj-nav-icon">▣</span>
+                    <span>My Jobs</span>
+                </a>
+
+                <a href="messages.html" class="nj-side-link">
+                    <span class="nj-nav-icon">✉</span>
+                    <span>Messages</span>
+                </a>
+
+                <a href="profile.html" class="nj-side-link">
+                    <span class="nj-nav-icon">♙</span>
+                    <span>My Profile</span>
+                </a>
+
+            </nav>
+
+            <div class="nj-sidebar-bottom">
+
+                <div class="nj-sidebar-tip">
+                    <span class="nj-tip-icon">💡</span>
+
+                    <strong>Find the right person</strong>
+
+                    <p>
+                        Review applications carefully and choose the
+                        best person for your project.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="nj-logout-button logout-button"
+                >
+                    <span>↪</span>
+                    Log Out
+                </button>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN AREA -->
+        <div class="nj-dashboard-main">
+
+            <!-- TOPBAR -->
+            <header class="nj-topbar">
+
+                <div class="nj-topbar-heading">
+                    <span class="nj-topbar-eyebrow">
+                        NAIJAJOBS WORKSPACE
+                    </span>
+
+                    <h1>Job Applicants</h1>
+                </div>
+
+                <a href="my-jobs.html" class="nj-topbar-action">
+                    <span>←</span>
+                    <span>Back to My Jobs</span>
+                </a>
+
+            </header>
+
+
+            <!-- PAGE CONTENT -->
+            <main class="nj-dashboard-content nj-applicants-content">
+
+                <!-- WELCOME BANNER -->
+                <section class="nj-applicants-welcome">
+
+                    <div>
+                        <span class="nj-applicants-eyebrow">
+                            FIND THE RIGHT PERSON
+                        </span>
+
+                        <h2>Meet your potential team.</h2>
+
+                        <p>
+                            Review applications, explore applicants'
+                            experience, and find the right person for
+                            your job.
+                        </p>
+                    </div>
+
+                    <div
+                        class="nj-applicants-welcome-icon"
+                        aria-hidden="true"
+                    >
+                        👥
+                    </div>
+
+                </section>
+
+
+                <!-- PAGE HEADING -->
+                <div class="nj-applicants-page-heading">
+
+                    <div>
+                        <h2>Applications received</h2>
+
+                        <p>
+                            Review applicants for the job you selected.
+                        </p>
+                    </div>
+
+                    <span class="nj-applicants-section-label">
+                        APPLICANT MANAGEMENT
+                    </span>
+
+                </div>
+
+
+                <!-- APPLICANTS: KEEP THIS ID -->
+                <section
+                    id="applicants-container"
+                    class="applicants-container nj-applicants-list"
+                    aria-live="polite"
+                >
+
+                    <div class="nj-applicants-loading">
+                        <div class="nj-applicants-loading-icon">
+                            ⏳
+                        </div>
+
+                        <h3>Loading applicants...</h3>
+
+                        <p>
+                            Please wait while we retrieve applications.
+                        </p>
+                    </div>
+
+                </section>
+
+
+                <!-- HELPFUL TIP -->
+                <aside class="nj-applicants-help">
+
+                    <div
+                        class="nj-applicants-help-icon"
+                        aria-hidden="true"
+                    >
+                        💡
+                    </div>
+
+                    <div>
+                        <h3>Choose carefully</h3>
+
+                        <p>
+                            Review each applicant's skills, experience,
+                            and application message before making your
+                            decision. Choose someone who fits the work
+                            you posted.
+                        </p>
+                    </div>
+
+                </aside>
+
+
+                <!-- FOOTER -->
+                <footer class="nj-dashboard-footer">
+                    <p>
+                        © 2026 NaijaJobs. Connecting skills with opportunities.
+                    </p>
+                </footer>
+
+            </main>
+
+        </div>
+
+    </div>
+
+
+    <!-- EXISTING SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

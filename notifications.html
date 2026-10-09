@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="View your NaijaJobs account and application notifications."
+    >
+
+    <meta name="theme-color" content="#635bff">
+
+    <title>Notifications - NaijaJobs</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="nj-notifications-page">
+
+    <!-- DASHBOARD LAYOUT -->
+    <div class="nj-notifications-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="nj-notifications-sidebar">
+
+            <a href="dashboard.html" class="nj-notifications-brand">
+                Naija<span>Jobs</span>
+            </a>
+
+            <p class="nj-notifications-nav-label">WORKSPACE</p>
+
+            <nav class="nj-notifications-nav"
+                 aria-label="Main navigation">
+
+                <a href="dashboard.html" class="nj-notifications-link">
+                    <span>▦</span>
+                    Dashboard
+                </a>
+
+                <a href="browse.html" class="nj-notifications-link">
+                    <span>⌕</span>
+                    Find Jobs
+                </a>
+
+                <a href="my-jobs.html" class="nj-notifications-link">
+                    <span>▤</span>
+                    My Jobs
+                </a>
+
+                <a href="applications.html" class="nj-notifications-link">
+                    <span>▣</span>
+                    Applications
+                </a>
+
+                <a href="messages.html" class="nj-notifications-link">
+                    <span>✉</span>
+                    Messages
+                </a>
+
+                <a href="notifications.html"
+                   class="nj-notifications-link active"
+                   aria-current="page">
+                    <span>♧</span>
+                    Notifications
+                </a>
+
+                <a href="profile.html" class="nj-notifications-link">
+                    <span>◉</span>
+                    My Profile
+                </a>
+
+            </nav>
+
+            <div class="nj-notifications-sidebar-bottom">
+                <div class="nj-notifications-help">
+                    <span>✦</span>
+                    <strong>Keep moving forward</strong>
+                    <p>Your next opportunity could be one click away.</p>
+                </div>
+
+                <a href="index.html" class="nj-notifications-home-link">
+                    ← Back to Home
+                </a>
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="nj-notifications-main">
+
+            <!-- TOPBAR -->
+            <header class="nj-notifications-topbar">
+
+                <div>
+                    <p class="nj-notifications-breadcrumb">
+                        Workspace / Notifications
+                    </p>
+                    <h1>Notifications</h1>
+                </div>
+
+                <a href="profile.html"
+                   class="nj-notifications-profile-link">
+                    <span class="nj-notifications-avatar">NJ</span>
+                    <span>My Profile</span>
+                </a>
+
+            </header>
+
+
+            <!-- PAGE INTRODUCTION -->
+            <section class="nj-notifications-welcome">
+
+                <div>
+                    <span class="nj-notifications-eyebrow">
+                        YOUR LATEST UPDATES
+                    </span>
+
+                    <h2>Stay in the loop.</h2>
+
+                    <p>
+                        Keep track of updates about your applications,
+                        job opportunities and activity on NaijaJobs.
+                    </p>
+                </div>
+
+                <div class="nj-notifications-hero-icon"
+                     aria-hidden="true">
+                    ♧
+                </div>
+
+            </section>
+
+
+            <!-- NOTIFICATIONS PANEL -->
+            <section class="nj-notifications-panel">
+
+                <div class="nj-notifications-panel-heading">
+
+                    <div class="nj-notifications-heading-left">
+                        <div class="nj-notifications-heading-icon"
+                             aria-hidden="true">
+                            ♧
+                        </div>
+
+                        <div>
+                            <h2>Recent notifications</h2>
+                            <p>Updates and alerts for your account.</p>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <!-- KEEP THIS ID FOR EXISTING JAVASCRIPT -->
+                <div
+                    id="notifications-container"
+                    class="nj-notifications-container"
+                    aria-live="polite"
+                >
+
+                    <div class="nj-notifications-empty-state">
+
+                        <div class="nj-notifications-empty-icon"
+                             aria-hidden="true">
+                            ♧
+                        </div>
+
+                        <h3>You're all caught up!</h3>
+
+                        <p>
+                            When there are updates about your applications
+                            or jobs, you'll see them here.
+                        </p>
+
+                        <a
+                            href="dashboard.html"
+                            class="nj-notifications-button"
+                        >
+                            Back to Dashboard
+                            <span aria-hidden="true">→</span>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- FOOTER -->
+            <footer class="nj-notifications-footer">
+                © 2026 NaijaJobs. Connecting skills with opportunities.
+            </footer>
+
+        </main>
+
+    </div>
+
+
+    <!-- SCRIPTS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

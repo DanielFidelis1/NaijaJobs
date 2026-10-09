@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Applications - NaijaJobs</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="nj-dashboard-body nj-applications-body">
+
+    <div class="nj-dashboard-shell">
+
+        <!-- SIDEBAR -->
+        <aside class="nj-sidebar">
+
+            <a href="dashboard.html" class="nj-brand">
+                Naija<span>Jobs</span>
+            </a>
+
+            <p class="nj-sidebar-label">WORKSPACE</p>
+
+            <nav class="nj-sidebar-nav">
+
+                <a href="dashboard.html" class="nj-side-link">
+                    <span>▦</span> Dashboard
+                </a>
+
+                <a href="browse.html" class="nj-side-link">
+                    <span>⌕</span> Find Jobs
+                </a>
+
+                <a href="applications.html"
+                   class="nj-side-link active">
+                    <span>▤</span> My Applications
+                </a>
+
+                <a href="my-jobs.html" class="nj-side-link">
+                    <span>▣</span> My Jobs
+                </a>
+
+                <a href="post-job.html" class="nj-side-link">
+                    <span>＋</span> Post a Job
+                </a>
+
+                <a href="messages.html" class="nj-side-link">
+                    <span>✉</span> Messages
+                </a>
+
+                <a href="profile.html" class="nj-side-link">
+                    <span>◎</span> My Profile
+                </a>
+
+            </nav>
+
+            <div class="nj-sidebar-bottom">
+                <div class="nj-sidebar-help">
+                    <strong>Looking for work?</strong>
+                    <p>Explore new opportunities on NaijaJobs.</p>
+                    <a href="browse.html">Explore jobs →</a>
+                </div>
+
+                <button
+                    type="button"
+                    id="logout-button"
+                    class="nj-logout-button logout-button">
+                    ↪ Log Out
+                </button>
+            </div>
+
+        </aside>
+
+        <!-- MAIN AREA -->
+        <main class="nj-dashboard-main">
+
+            <header class="nj-topbar">
+
+                <div>
+                    <p class="nj-topbar-label">JOB SEEKER WORKSPACE</p>
+                    <h2>My Applications</h2>
+                </div>
+
+                <div class="nj-topbar-actions">
+                    <a href="browse.html"
+                       class="nj-small-action-button">
+                        Find Jobs
+                    </a>
+
+                    <a href="profile.html"
+                       class="nj-avatar-link">
+                        ◎
+                    </a>
+                </div>
+
+            </header>
+
+            <div class="nj-dashboard-content">
+
+                <!-- WELCOME BANNER -->
+                <section class="nj-welcome-banner">
+
+                    <div>
+                        <span class="nj-banner-eyebrow">
+                            YOUR JOB SEARCH
+                        </span>
+
+                        <h1>Track your applications.</h1>
+
+                        <p>
+                            Keep an eye on your submissions,
+                            check application statuses, and
+                            stay ready for your next opportunity.
+                        </p>
+
+                        <a href="browse.html"
+                           class="nj-banner-button">
+                            Explore Jobs →
+                        </a>
+                    </div>
+
+                    <div class="nj-banner-decoration"
+                         aria-hidden="true">
+                        <span>✓</span>
+                    </div>
+
+                </section>
+
+                <!-- APPLICATION STATISTICS -->
+                <section class="nj-overview-section">
+
+                    <div class="nj-section-heading">
+                        <div>
+                            <h2>Application Overview</h2>
+                            <p>A quick look at your job search.</p>
+                        </div>
+                    </div>
+
+                    <div class="nj-overview-grid">
+
+                        <article class="nj-overview-card">
+                            <div class="nj-stat-icon purple">
+                                ▤
+                            </div>
+
+                            <p>Total Applications</p>
+                            <h3 id="seeker-total-applications">—</h3>
+                            <span>Jobs you've applied for</span>
+                        </article>
+
+                        <article class="nj-overview-card">
+                            <div class="nj-stat-icon orange">
+                                ◷
+                            </div>
+
+                            <p>Pending</p>
+                            <h3 id="seeker-pending-applications">—</h3>
+                            <span>Awaiting a decision</span>
+                        </article>
+
+                        <article class="nj-overview-card">
+                            <div class="nj-stat-icon green">
+                                ✓
+                            </div>
+
+                            <p>Accepted</p>
+                            <h3 id="seeker-accepted-applications">—</h3>
+                            <span>Applications accepted</span>
+                        </article>
+
+                        <article class="nj-overview-card">
+                            <div class="nj-stat-icon blue">
+                                ↗
+                            </div>
+
+                            <p>Rejected</p>
+                            <h3 id="seeker-rejected-applications">—</h3>
+                            <span>Applications not successful</span>
+                        </article>
+
+                    </div>
+
+                </section>
+
+                <!-- APPLICATION LIST -->
+                <section class="nj-applications-section">
+
+                    <div class="nj-section-heading">
+                        <div>
+                            <h2>Your Applications</h2>
+                            <p>
+                                Review your submitted applications
+                                and their latest status.
+                            </p>
+                        </div>
+
+                        <a href="browse.html"
+                           class="nj-text-link">
+                            Find more jobs →
+                        </a>
+                    </div>
+
+                    <div id="applications-container"
+                         class="applications-container nj-applications-list">
+
+                        <div class="nj-applications-loading">
+                            <span class="nj-loading-spinner"></span>
+                            <p>Loading your applications...</p>
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- BOTTOM CTA -->
+                <section class="nj-profile-prompt">
+                    <div>
+                        <h2>Still looking for the right opportunity?</h2>
+                        <p>
+                            Explore available jobs and take the next
+                            step in your career.
+                        </p>
+                    </div>
+
+                    <a href="browse.html"
+                       class="nj-primary-button">
+                        Browse Jobs →
+                    </a>
+                </section>
+
+                <footer class="nj-dashboard-footer">
+                    <p>
+                        © 2026 NaijaJobs. Connecting talent with opportunity.
+                    </p>
+                </footer>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
