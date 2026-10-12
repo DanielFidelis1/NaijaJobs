@@ -219,12 +219,122 @@ if (loginForm) {
                 "Something went wrong. Please try again.";
         }
     });
-}
+}   
 // ========================================
 // POST A JOB
 // ========================================
 
 const postJobForm = document.getElementById("post-job-form");
+
+
+const employerApprovalNotice = document.getElementById(
+    "employer-approval-notice"
+);
+
+async function checkEmployerApproval() {
+    if (!postJobForm) return;
+
+    const submitButton = postJobForm.querySelector(
+        'button[type="submit"]'
+    );
+
+    const message = document.getElementById(
+        "post-job-message"
+    );
+
+    if (submitButton) submitButton.disabled = true;
+
+    try {
+        const {
+            data: { user },
+            error: authError
+        } = await supabaseClient.auth.getUser();
+
+        if (authError || !user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        const { data: profile, error: profileError } =
+            await supabaseClient
+                .from("profiles")
+                .select("account_type, employer_status, is_suspended")
+                .eq("id", user.id)
+                .maybeSingle();
+
+        if (profileError || !profile) {
+            throw profileError || new Error(
+                "Could not verify your account."
+            );
+        }
+
+        if (profile.is_suspended) {
+            if (employerApprovalNotice) {
+                employerApprovalNotice.style.display = "block";
+                employerApprovalNotice.textContent =
+                    "Your account is suspended. Please contact NaijaJobs support.";
+            }
+            if (message) message.textContent =
+                "Job posting is unavailable for suspended accounts.";
+            return;
+        }
+
+        if (profile.account_type !== "client") {
+            if (employerApprovalNotice) {
+                employerApprovalNotice.style.display = "block";
+                employerApprovalNotice.textContent =
+                    "Only employer accounts can post jobs.";
+            }
+            if (message) message.textContent =
+                "You need an employer account to post a job.";
+            return;
+        }
+
+        if (profile.employer_status !== "approved") {
+            if (employerApprovalNotice) {
+                employerApprovalNotice.style.display = "block";
+                employerApprovalNotice.style.background = "#fff4d6";
+                employerApprovalNotice.style.color = "#805b00";
+                employerApprovalNotice.textContent =
+                    profile.employer_status === "rejected"
+                        ? "Your employer registration was rejected. You can log in, but you cannot post jobs. Please contact NaijaJobs support."
+                        : "Your employer account is awaiting admin approval. You can use your account, but you cannot post jobs yet.";
+            }
+
+            if (message) {
+                message.textContent =
+                    "Job posting is unavailable until your employer account is approved.";
+            }
+
+            return;
+        }
+
+        if (employerApprovalNotice) {
+            employerApprovalNotice.style.display = "none";
+        }
+
+        if (submitButton) submitButton.disabled = false;
+
+    } catch (error) {
+        console.error("Employer approval check failed:", error);
+
+        if (employerApprovalNotice) {
+            employerApprovalNotice.style.display = "block";
+            employerApprovalNotice.textContent =
+                "We couldn't verify your employer approval. Please refresh the page or try again later.";
+        }
+
+        if (message) {
+            message.textContent =
+                "Job posting is temporarily unavailable.";
+        }
+    }
+}
+
+if (postJobForm) {
+    checkEmployerApproval();
+}
+
 
 if (postJobForm) {
 
@@ -254,6 +364,31 @@ postJobForm.addEventListener("submit", async function (event) {
 
             return;
         }
+
+        
+const {
+    data: currentProfile,
+    error: currentProfileError
+} = await supabaseClient
+    .from("profiles")
+    .select("account_type, employer_status, is_suspended")
+    .eq("id", user.id)
+    .maybeSingle();
+
+if (
+    currentProfileError ||
+    !currentProfile ||
+    currentProfile.account_type !== "client" ||
+    currentProfile.employer_status !== "approved" ||
+    currentProfile.is_suspended
+) {
+    message.textContent =
+        "Your employer account must be active and approved before you can post jobs.";
+
+    await checkEmployerApproval();
+    return;
+}
+
 
 
         // Get form values
@@ -952,250 +1087,375 @@ loadJobDetails();
 
 
 }
-// ========================================
-// MY APPLICATIONS
-// ========================================
+
+/* ========================================
+   MY APPLICATIONS
+======================================== */
 
 const applicationsContainer =
-document.getElementById(
-"applications-container"
-);
+    document.getElementById("applications-container");
 
 if (applicationsContainer) {
 
-async function loadApplications() {
+    async function loadApplications() {
 
-    try {
+        const totalElement =
+            document.getElementById("seeker-total-applications");
 
-        // Check logged-in user
-        const {
-            data: {
-                user
-            },
-            error: authError
-        } = await supabaseClient.auth.getUser();
+        const pendingElement =
+            document.getElementById("seeker-pending-applications");
+
+        const acceptedElement =
+            document.getElementById("seeker-accepted-applications");
+
+        const rejectedElement =
+            document.getElementById("seeker-rejected-applications");
 
 
-        if (authError || !user) {
+        function updateStatistics(applications) {
 
-            window.location.href =
-                "login.html";
+            const total = applications.length;
 
-            return;
+            const pending = applications.filter(
+                app => app.status === "pending"
+            ).length;
+
+            const accepted = applications.filter(
+                app => app.status === "accepted"
+            ).length;
+
+            const rejected = applications.filter(
+                app => app.status === "rejected"
+            ).length;
+
+            if (totalElement) {
+                totalElement.textContent = total;
+            }
+
+            if (pendingElement) {
+                pendingElement.textContent = pending;
+            }
+
+            if (acceptedElement) {
+                acceptedElement.textContent = accepted;
+            }
+
+            if (rejectedElement) {
+                rejectedElement.textContent = rejected;
+            }
         }
 
 
-        // Get applications
-        const {
-            data: applications,
-            error
-        } = await supabaseClient
-            .from("applications")
-            .select(`
-                id,
-                cover_message,
-                status,
-                created_at,
-                jobs (
-                    id,
-                    title,
-                    category,
-                    budget,
-                    location,
-                    job_type,
-                    deadline
-                )
-            `)
-            .eq("user_id", user.id)
-            .order("created_at", {
-                ascending: false
-            });
+        function formatStatus(status) {
 
+            const normalized = String(
+                status || ""
+            ).trim().toLowerCase();
 
-        if (error) {
+            const knownStatuses = {
+                pending: {
+                    label: "Pending",
+                    className: "status-pending"
+                },
 
-            console.error(
-                "Applications error:",
-                error
-            );
+                accepted: {
+                    label: "Accepted",
+                    className: "status-accepted"
+                },
 
-            applicationsContainer.innerHTML =
-                "<p>Could not load your applications.</p>";
+                rejected: {
+                    label: "Rejected",
+                    className: "status-rejected"
+                }
+            };
 
-            return;
+            if (knownStatuses[normalized]) {
+                return knownStatuses[normalized];
+            }
+
+            return {
+                label: normalized
+                    ? normalized.replace(/_/g, " ")
+                    : "Status unavailable",
+
+                className: "status-unknown"
+            };
         }
 
 
-        if (!applications || !applications.length) {
+        try {
 
             applicationsContainer.innerHTML = `
-
-                <div class="empty-applications">
-
-                    <h2>
-                        No applications yet
-                    </h2>
-
-                    <p>
-                        Find a job and submit your first application.
-                    </p>
-
-                    <a
-                        href="browse.html"
-                        class="apply-button"
-                    >
-                        Find Jobs
-                    </a>
-
+                <div class="nj-applications-loading">
+                    <span class="nj-loading-spinner"></span>
+                    <p>Loading your applications...</p>
                 </div>
-
             `;
 
-            return;
-        }
+
+            const {
+                data: { user },
+                error: authError
+            } = await supabaseClient.auth.getUser();
 
 
-        applicationsContainer.innerHTML = "";
-
-
-        applications.forEach(function (application) {
-
-            const job =
-                application.jobs;
-
-
-            if (!job) {
+            if (authError || !user) {
+                window.location.href = "login.html";
                 return;
             }
 
 
-            const card =
-                document.createElement("div");
+            const {
+                data: applications,
+                error
+            } = await supabaseClient
+                .from("applications")
+                .select(`
+                    id,
+                    job_id,
+                    cover_message,
+                    status,
+                    created_at,
+                    jobs (
+                        id,
+                        title,
+                        category,
+                        budget,
+                        location,
+                        job_type,
+                        deadline
+                    )
+                `)
+                .eq("user_id", user.id)
+                .order("created_at", {
+                    ascending: false
+                });
 
-            card.className =
-                "application-card";
 
-
-            const budget =
-                Number(job.budget)
-                    .toLocaleString();
-
-
-            let statusClass =
-                "status-pending";
-
-
-            if (application.status === "accepted") {
-
-                statusClass =
-                    "status-accepted";
-
+            if (error) {
+                throw error;
             }
 
-            else if (application.status === "rejected") {
 
-                statusClass =
-                    "status-rejected";
+            const safeApplications = applications || [];
 
+            updateStatistics(safeApplications);
+
+
+            if (safeApplications.length === 0) {
+
+                applicationsContainer.innerHTML = `
+                    <div class="empty-applications">
+                        <h2>No applications yet</h2>
+
+                        <p>
+                            Find a job and submit your first application.
+                        </p>
+
+                        <a
+                            href="browse.html"
+                            class="apply-button"
+                        >
+                            Find Jobs
+                        </a>
+                    </div>
+                `;
+
+                return;
             }
 
 
-            card.innerHTML = `
+            applicationsContainer.innerHTML = "";
 
-                <div class="application-card-top">
 
-                    <div>
+            safeApplications.forEach(function (application) {
 
-                        <span class="job-category">
-                            ${escapeHTML(job.category)}
+                const job = application.jobs;
+
+                if (!job) {
+                    return;
+                }
+
+
+                const card = document.createElement("article");
+
+                card.className = "application-card";
+
+
+                const status = formatStatus(
+                    application.status
+                );
+
+
+                const budget = Number(job.budget || 0)
+                    .toLocaleString("en-NG");
+
+
+                const appliedDate = application.created_at
+                    ? new Date(
+                        application.created_at
+                    ).toLocaleDateString("en-NG", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric"
+                    })
+                    : "Date unavailable";
+
+
+                card.innerHTML = `
+
+                    <div class="application-card-top">
+
+                        <div class="application-heading">
+
+                            <span class="job-category">
+                                ${escapeHTML(job.category || "General")}
+                            </span>
+
+                            <h2>
+                                ${escapeHTML(job.title || "Untitled job")}
+                            </h2>
+
+                        </div>
+
+                        <span class="application-status ${status.className}">
+                            ${escapeHTML(status.label)}
                         </span>
-
-                        <h2>
-                            ${escapeHTML(job.title)}
-                        </h2>
 
                     </div>
 
 
-                    <span class="application-status ${statusClass}">
-                        ${escapeHTML(application.status)}
-                    </span>
+                    <div class="application-details">
 
-                </div>
+                        <span>
+                            💰 ₦${budget}
+                        </span>
 
+                        <span>
+                            📍 ${escapeHTML(job.location || "Not specified")}
+                        </span>
 
-                <div class="application-details">
+                        <span>
+                            💼 ${escapeHTML(job.job_type || "Not specified")}
+                        </span>
 
-                    <span>
-                        💰 ₦${budget}
-                    </span>
-
-                    <span>
-                        📍 ${escapeHTML(job.location)}
-                    </span>
-
-                    <span>
-                        💼 ${escapeHTML(job.job_type)}
-                    </span>
-
-                </div>
+                    </div>
 
 
-                <p class="application-message">
+                    <p class="application-message">
 
-                    <strong>
-                        Your message:
-                    </strong>
+                        <strong>Your message:</strong>
 
-                    ${escapeHTML(
-                        application.cover_message
-                    )}
+                        ${escapeHTML(application.cover_message || "No cover message provided.")}
 
-                </p>
+                    </p>
 
 
-                <p class="application-date">
-
-                    Applied:
-                    ${new Date(
-                        application.created_at
-                    ).toLocaleDateString()}
-
-                </p>
+                    <p class="application-date">
+                        Applied: ${escapeHTML(appliedDate)}
+                    </p>
 
 
-                <a
-                    href="job.html?id=${job.id}"
-                    class="job-button"
-                >
-                    View Job
-                </a>
+                    <a
+                        href="job.html?id=${encodeURIComponent(job.id)}"
+                        class="job-button"
+                    >
+                        View Job
+                    </a>
 
-            `;
+                `;
 
 
-            applicationsContainer.appendChild(
-                card
+                applicationsContainer.appendChild(card);
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+                "Could not load applications:",
+                error
             );
 
-        });
+            applicationsContainer.innerHTML = `
+                <div class="empty-applications">
+                    <h2>Unable to load applications</h2>
 
-    } catch (error) {
+                    <p>
+                        Please refresh the page and try again.
+                    </p>
 
-        console.error(error);
+                    <button
+                        type="button"
+                        class="job-button"
+                        onclick="window.location.reload()"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            `;
 
-        applicationsContainer.innerHTML =
-            "<p>Something went wrong.</p>";
+        }
 
     }
 
+
+    
+    loadApplications();
+
+    // ========================================
+    // REALTIME APPLICATION STATUS UPDATES
+    // ========================================
+
+    let applicationsChannel = null;
+
+    async function subscribeToApplicationUpdates() {
+
+        const {
+            data: { user },
+            error
+        } = await supabaseClient.auth.getUser();
+
+        if (error || !user) {
+            return;
+        }
+
+        // Avoid creating duplicate subscriptions.
+        if (applicationsChannel) {
+            await supabaseClient.removeChannel(
+                applicationsChannel
+            );
+        }
+
+        applicationsChannel = supabaseClient
+            .channel("seeker-application-status-updates")
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "applications",
+                    filter: `user_id=eq.${user.id}`
+                },
+                function () {
+                    loadApplications();
+                }
+            )
+            .subscribe(function (status) {
+                if (status === "CHANNEL_ERROR") {
+                    console.error(
+                        "Could not subscribe to application updates."
+                    );
+                }
+            });
+    }
+
+    subscribeToApplicationUpdates();
+
+
 }
 
-
-loadApplications();
-
-
-}
 // ========================================
 // MY JOBS
 // ========================================
@@ -3099,13 +3359,18 @@ async function loadAdminUsers() {
         data.forEach(function (profile) {
             const row = document.createElement("tr");
 
-            const values = [
-                profile.full_name || "Name not provided",
-                profile.account_type || "Not specified",
-                profile.location || "Not provided",
-                profile.skills || "Not provided",
-                profile.is_suspended ? "Suspended" : "Active"
-            ];
+            
+const values = [
+    profile.full_name || "Name not provided",
+    profile.account_type || "Not specified",
+    profile.location || "Not provided",
+    profile.skills || "Not provided",
+    profile.is_suspended ? "Suspended" : "Active",
+    profile.account_type === "client"
+        ? (profile.employer_status || "pending")
+        : "Not applicable"
+];
+
 
             values.forEach(function (value) {
                 const cell = document.createElement("td");
@@ -3196,9 +3461,95 @@ async function loadAdminUsers() {
             });
 
             actionCell.appendChild(actionButton);
+            
+if (profile.account_type === "client") {
+    const approvalSelect = document.createElement("select");
+    approvalSelect.className = "admin-button";
+    approvalSelect.style.marginLeft = "8px";
+
+    const statuses = [
+        { value: "pending", label: "Pending" },
+        { value: "approved", label: "Approved" },
+        { value: "rejected", label: "Rejected" }
+    ];
+
+    statuses.forEach(function (status) {
+        const option = document.createElement("option");
+        option.value = status.value;
+        option.textContent = status.label;
+        approvalSelect.appendChild(option);
+    });
+
+    approvalSelect.value = profile.employer_status || "pending";
+
+    const approvalButton = document.createElement("button");
+    approvalButton.type = "button";
+    approvalButton.className = "admin-button";
+    approvalButton.style.marginLeft = "8px";
+    approvalButton.textContent = "Save Approval";
+
+    approvalButton.addEventListener("click", async function () {
+        const newStatus = approvalSelect.value;
+
+        if (newStatus === profile.employer_status) {
+            message.textContent = "Employer status is already " + newStatus + ".";
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "Change this employer's status to " + newStatus + "?"
+        );
+
+        if (!confirmed) return;
+
+        approvalButton.disabled = true;
+        approvalSelect.disabled = true;
+        message.textContent = "Updating employer approval...";
+
+        try {
+            const { error: approvalError } =
+                await supabaseClient.rpc("admin_set_employer_status", {
+                    p_user_id: profile.id,
+                    p_status: newStatus
+                });
+
+            if (approvalError) throw approvalError;
+
+            const { error: logError } =
+                await supabaseClient.rpc("admin_record_activity", {
+                    p_action: "employer_status_" + newStatus,
+                    p_target_type: "user",
+                    p_target_id: String(profile.id),
+                    p_details: {
+                        full_name: profile.full_name || "Name not provided",
+                        employer_status: newStatus
+                    }
+                });
+
+            if (logError) {
+                console.error("Employer approval activity log failed:", logError);
+            }
+
+            await loadAdminUsers();
+            await loadAdminActivity();
+
+        } catch (error) {
+            console.error("Unable to update employer status:", error);
+            message.textContent =
+                "Could not update employer approval: " + error.message;
+            approvalButton.disabled = false;
+            approvalSelect.disabled = false;
+        }
+    });
+
+    actionCell.appendChild(approvalSelect);
+    actionCell.appendChild(approvalButton);
+}
+
             row.appendChild(actionCell);
             tableBody.appendChild(row);
         });
+        
 
         message.textContent =
             "Showing " + data.length + " registered profiles.";

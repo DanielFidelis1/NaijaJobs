@@ -1,4 +1,4 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 /* ========================================
    NAIJAJOBS — CLEAN MASTER STYLESHEET
    PART 1: GLOBAL, HEADER, HOMEPAGE, FOOTER
@@ -7689,4 +7689,723 @@ padding: 12px;
     font-size: 11px;
 }
 
+}
+
+/* ========================================
+   NAIJAJOBS — APPLICATION TRACKING
+   Mobile + Desktop Improvements
+======================================== */
+
+.nj-applications-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 20px;
+}
+
+.nj-applications-list .application-card {
+    min-width: 0;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.nj-applications-list .application-card:hover {
+    border-color: #d9d5ff;
+    box-shadow: 0 10px 28px rgba(37, 38, 65, 0.08);
+    transform: translateY(-2px);
+}
+
+.nj-applications-list .application-card-top {
+    align-items: flex-start;
+}
+
+.nj-applications-list .application-heading {
+    flex: 1;
+    min-width: 0;
+}
+
+.nj-applications-list .application-status {
+    flex-shrink: 0;
+    max-width: 100%;
+    padding: 7px 12px;
+    font-size: 12px;
+    line-height: 1.4;
+    text-transform: capitalize;
+    overflow-wrap: anywhere;
+}
+
+.nj-applications-list .status-pending {
+    background: var(--warning-light);
+    color: var(--warning);
+}
+
+.nj-applications-list .status-accepted {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.nj-applications-list .status-rejected {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.nj-applications-list .status-unknown {
+    background: #f0eff5;
+    color: #55516b;
+}
+
+.nj-applications-list .job-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 11px 16px;
+    border-radius: 9px;
+    text-decoration: none;
+}
+
+.nj-applications-list .job-button:focus-visible {
+    outline: 3px solid rgba(99, 91, 255, 0.35);
+    outline-offset: 3px;
+}
+
+.nj-applications-list .application-message {
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+.nj-applications-list .application-date {
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .nj-applications-list {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .nj-applications-list {
+        gap: 15px;
+    }
+
+    .nj-applications-list .application-card {
+        padding: 17px;
+        border-radius: 13px;
+    }
+
+    .nj-applications-list .application-card-top {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .nj-applications-list .application-status {
+        align-self: flex-start;
+    }
+
+    .nj-applications-list .application-details {
+        gap: 11px;
+        font-size: 13px;
+    }
+
+    .nj-applications-list .application-message {
+        padding: 12px;
+        line-height: 1.7;
+    }
+
+    .nj-applications-list .job-button {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   NAIJAJOBS — GREEN & WHITE THEME
+   Added theme overrides — keep existing CSS
+========================================= */
+
+/* 1. GLOBAL COLOURS AND TYPOGRAPHY */
+
+:root {
+    --primary: #198754;
+    --primary-dark: #146c43;
+    --primary-light: #e8f5ec;
+
+    --background: #f5f9f6;
+    --surface: #ffffff;
+
+    --heading: #173b2a;
+    --text: #425449;
+    --muted: #738277;
+    --border: #e0ebe3;
+
+    --success: #198754;
+    --success-light: #e8f5ec;
+
+    --danger: #c83d4d;
+    --danger-light: #fff0f1;
+
+    --warning: #996515;
+    --warning-light: #fff5df;
+
+    --shadow: 0 8px 28px rgba(23, 59, 42, 0.06);
+    --shadow-hover: 0 14px 35px rgba(23, 59, 42, 0.11);
+
+    --radius: 16px;
+    --radius-small: 10px;
+    --transition: 0.25s ease;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.65;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--heading);
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+}
+
+a {
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+::selection {
+    background: #c8ead4;
+    color: #173b2a;
+}
+
+/* 2. SHARED BUTTONS AND LINKS */
+
+button,
+.button,
+.btn,
+.primary-button,
+.submit-button,
+.nj-post-job-submit-button,
+.nj-profile-save-button,
+.nj-auth-submit,
+.nj-messages-browse-button,
+.nj-notifications-button {
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.nj-post-job-submit-button,
+.nj-profile-save-button,
+.nj-auth-submit,
+.nj-messages-browse-button,
+.nj-notifications-button {
+    background: var(--primary);
+}
+
+.nj-post-job-submit-button:hover,
+.nj-profile-save-button:hover,
+.nj-auth-submit:hover,
+.nj-messages-browse-button:hover,
+.nj-notifications-button:hover {
+    background: var(--primary-dark);
+}
+
+.nj-text-link,
+.nj-job-back-link,
+.nj-profile-links-card a:hover,
+.nj-profile-links-card a span:last-child {
+    color: var(--primary);
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 3px solid rgba(25, 135, 84, 0.3);
+    outline-offset: 3px;
+}
+
+/* 3. DASHBOARD BACKGROUNDS AND SIDEBARS */
+
+.nj-job-details-body,
+.nj-applicants-body,
+.nj-notifications-page {
+    background: var(--background);
+    color: var(--text);
+    font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+
+.nj-sidebar,
+.nj-notifications-sidebar {
+    background: #ffffff;
+    border-color: var(--border);
+}
+
+.nj-brand span,
+.nj-notifications-brand span {
+    color: var(--primary);
+}
+
+.nj-side-link:hover,
+.nj-side-link.active {
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.nj-notifications-link:hover,
+.nj-notifications-link.active {
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.nj-topbar,
+.nj-notifications-topbar {
+    background: #ffffff;
+    border-color: var(--border);
+}
+
+.nj-topbar-action {
+    border-color: var(--border);
+    color: var(--primary);
+}
+
+.nj-topbar-action:hover {
+    background: var(--primary-light);
+}
+
+.nj-logout-button:hover {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+/* 4. GREEN WELCOME BANNERS */
+
+.nj-welcome-banner,
+.nj-job-details-body .nj-job-welcome,
+.nj-applicants-body .nj-applicants-welcome,
+.nj-notifications-welcome {
+    background: linear-gradient(120deg, #146c43, #27965f);
+    color: #ffffff;
+}
+
+.nj-welcome-banner h1,
+.nj-welcome-banner h2,
+.nj-welcome-banner h3,
+.nj-job-details-body .nj-job-welcome h2,
+.nj-applicants-body .nj-applicants-welcome h2,
+.nj-notifications-welcome h2 {
+    color: #ffffff;
+}
+
+.nj-welcome-banner p,
+.nj-job-details-body .nj-job-welcome p,
+.nj-applicants-body .nj-applicants-welcome p,
+.nj-notifications-welcome p {
+    color: #e9f8ee;
+}
+
+/* 5. CARDS AND PANELS */
+
+.nj-overview-card,
+.nj-browse-search-card,
+.nj-post-benefit-card,
+.nj-post-job-form-card,
+.nj-messages-overview,
+.nj-messages-panel,
+.nj-profile-card,
+.nj-profile-tip-card,
+.nj-profile-links-card,
+.nj-job-details-body .nj-job-details-card,
+.nj-job-details-body .nj-job-applicants-card,
+.nj-job-details-body .nj-job-completion-card,
+.nj-applicants-body .nj-applicants-list,
+.nj-notifications-panel {
+    background: #ffffff;
+    border-color: var(--border);
+    box-shadow: var(--shadow);
+}
+
+.nj-profile-tip-card {
+    background: linear-gradient(145deg, #ffffff, #f0f8f2);
+}
+
+.nj-messages-panel-heading,
+.nj-profile-card-heading {
+    border-color: var(--border);
+}
+
+/* 6. ICONS AND SMALL STATUS ELEMENTS */
+
+.nj-stat-icon.purple,
+.nj-post-benefit-icon,
+.nj-messages-overview-icon,
+.nj-messages-empty-icon,
+.nj-profile-heading-icon,
+.nj-profile-tip-icon,
+.nj-loading-spinner,
+.nj-notifications-heading-icon,
+.nj-notifications-avatar,
+.nj-notifications-empty-icon,
+.nj-applicants-loading-icon,
+.nj-job-details-body .nj-job-loading-icon {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.nj-loading-spinner {
+    border-color: #d7eadc;
+    border-top-color: var(--primary);
+}
+
+.nj-messages-status,
+.nj-messages-empty-icon,
+.nj-post-job-step,
+.nj-job-details-body .nj-job-section-label,
+.nj-applicants-body .nj-applicants-section-label {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.nj-messages-status > span {
+    background: var(--primary);
+}
+
+/* 7. FORMS AND INPUT FIELDS */
+
+.nj-post-job-field input,
+.nj-post-job-field textarea,
+.nj-post-job-field select,
+.nj-profile-form-group input,
+.nj-profile-form-group textarea,
+.nj-profile-form-group select,
+.nj-browse-search-field select,
+.nj-browse-input-wrap,
+.nj-signup-body .nj-auth-field input,
+.nj-signup-body .nj-auth-field select {
+    border-color: #d8e6dc;
+    background-color: #ffffff;
+    color: var(--heading);
+}
+
+.nj-browse-input-wrap {
+    background: #f8fbf8;
+}
+
+.nj-post-job-field input:focus,
+.nj-post-job-field textarea:focus,
+.nj-post-job-field select:focus,
+.nj-profile-form-group input:focus,
+.nj-profile-form-group textarea:focus,
+.nj-profile-form-group select:focus,
+.nj-browse-search-field input:focus,
+.nj-browse-search-field select:focus,
+.nj-signup-body .nj-auth-field input:focus,
+.nj-signup-body .nj-auth-field select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.12);
+}
+
+.nj-post-job-budget-wrap:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(25, 135, 84, 0.12);
+}
+
+.nj-post-job-budget-wrap > span {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* 8. HELP AND EMPTY-STATE PANELS */
+
+.nj-job-details-body .nj-job-help-card,
+.nj-applicants-body .nj-applicants-help,
+.nj-notifications-help {
+    background: #f0f8f2;
+    border-color: #d9ebde;
+}
+
+.nj-job-details-body .nj-job-help-icon,
+.nj-applicants-body .nj-applicants-help-icon {
+    background: #dcefe1;
+}
+
+.nj-notifications-help > span {
+    color: var(--primary);
+}
+
+/* 9. JOB CARDS AND APPLICATIONS */
+
+.nj-applications-list .application-card:hover,
+.nj-conversation-card:hover {
+    border-color: #a8d5b6;
+    box-shadow: 0 10px 28px rgba(23, 59, 42, 0.08);
+}
+
+.nj-applications-list .job-button {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.nj-applications-list .job-button:hover {
+    background: var(--primary-dark);
+}
+
+.nj-applications-list .job-button:focus-visible {
+    outline-color: rgba(25, 135, 84, 0.35);
+}
+
+.nj-conversation-avatar {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* 10. POST-JOB BENEFITS AND SIGNUP */
+
+.nj-signup-body .nj-auth-step,
+.nj-signup-body .nj-auth-switch a {
+    color: var(--primary);
+}
+
+.nj-signup-body .nj-auth-submit:focus-visible {
+    outline-color: rgba(25, 135, 84, 0.3);
+}
+
+/* 11. READABILITY AND CONSISTENT SPACING */
+
+.nj-section-heading p,
+.nj-post-benefit-card p,
+.nj-post-job-submit-note,
+.nj-profile-form-group small,
+.nj-messages-overview p,
+.nj-messages-empty-state p,
+.nj-notifications-empty-state p {
+    line-height: 1.75;
+}
+
+.nj-dashboard-footer {
+    border-color: var(--border);
+}
+
+/* 12. RESPONSIVE POLISH */
+
+img,
+video,
+iframe {
+    max-width: 100%;
+}
+
+input,
+select,
+textarea {
+    max-width: 100%;
+}
+
+@media (max-width: 700px) {
+    .nj-dashboard-content {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .nj-post-job-form-card,
+    .nj-profile-card {
+        border-radius: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* =====================================
+   NAIJAJOBS — ANDROID MOBILE SUPPORT
+   ===================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+}
+
+img,
+video,
+iframe {
+    max-width: 100%;
+}
+
+img {
+    height: auto;
+}
+
+input,
+select,
+textarea,
+button {
+    max-width: 100%;
+    font: inherit;
+}
+
+input,
+select,
+textarea {
+    font-size: 16px;
+}
+
+button,
+a {
+    touch-action: manipulation;
+}
+
+button,
+input[type="submit"],
+input[type="button"] {
+    min-height: 44px;
+}
+
+/* Prevent wide layouts from overflowing phones */
+.container,
+.main-content,
+.content,
+.dashboard,
+.dashboard-content,
+.form-container,
+.profile-container {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* Tablets and Android phones */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+
+    .container,
+    .main-content,
+    .content,
+    .dashboard-content,
+    .form-container,
+    .profile-container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    h1 {
+        font-size: clamp(26px, 7vw, 36px);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    h2 {
+        font-size: clamp(21px, 5.5vw, 28px);
+        line-height: 1.3;
+    }
+
+    p {
+        line-height: 1.6;
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        min-height: 44px;
+    }
+
+    button,
+    input[type="submit"] {
+        cursor: pointer;
+    }
+
+    /* Stack common dashboard columns */
+    .stats-container,
+    .stats-grid,
+    .dashboard-stats,
+    .cards-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    /* Allow wide tables to scroll instead of breaking the page */
+    table {
+        max-width: 100%;
+    }
+
+    .table-container,
+    .table-responsive {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Prevent long text and URLs from stretching the screen */
+    .job-card,
+    .application-card,
+    .profile-card,
+    .dashboard-card,
+    .message,
+    .notification {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+}
+
+/* Small Android phones */
+@media (max-width: 480px) {
+    .stats-container,
+    .stats-grid,
+    .dashboard-stats,
+    .cards-container {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    button,
+    input[type="submit"] {
+        width: 100%;
+    }
+
+    .container,
+    .main-content,
+    .content,
+    .dashboard-content {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
 }
