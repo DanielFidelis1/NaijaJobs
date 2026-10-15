@@ -8,165 +8,311 @@
     <title>Chat - NaijaJobs</title>
     <link rel="stylesheet" href="css/style.css">
 
+
 <style>
+    /* ========================================
+       NAIJAJOBS - MODERN CHAT DESIGN
+    ======================================== */
+
     .nj-chat-page {
-        max-width: 1000px;
-        margin: 30px auto;
-        padding: 20px;
+        width: min(100% - 32px, 900px);
+        margin: 32px auto;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid #e8eaf2;
+        border-radius: 20px;
+        box-shadow: 0 12px 40px rgba(31, 41, 55, 0.08);
     }
 
     .nj-chat-header {
         display: flex;
         align-items: center;
-        gap: 15px;
-        padding: 18px;
+        gap: 14px;
+        padding: 20px 24px;
         background: #fff;
-        border: 1px solid #e8e7f3;
-        border-radius: 14px 14px 0 0;
+        border-bottom: 1px solid #edf0f5;
     }
 
     .nj-chat-back {
-        color: #635bff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: 9px 12px;
+        color: #5148e5;
+        background: #f3f2ff;
+        border-radius: 10px;
         text-decoration: none;
+        font-size: 14px;
         font-weight: 600;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .nj-chat-back:hover {
+        background: #e8e6ff;
+        transform: translateX(-2px);
+    }
+
+    .nj-chat-back:focus-visible,
+    .nj-chat-form button:focus-visible {
+        outline: 3px solid #a5b4fc;
+        outline-offset: 3px;
     }
 
     .nj-chat-avatar {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 45px;
-        height: 45px;
+        flex-shrink: 0;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
-        background: #eeecff;
-        color: #635bff;
-        font-weight: 700;
+        background: linear-gradient(135deg, #635bff, #8b5cf6);
+        color: #fff;
         font-size: 20px;
+        font-weight: 700;
+        box-shadow: 0 4px 10px rgba(99, 91, 255, 0.2);
     }
 
     .nj-chat-header h1 {
         margin: 0;
+        color: #20233a;
         font-size: 18px;
-        color: #252344;
+        font-weight: 700;
+        overflow-wrap: anywhere;
     }
 
     .nj-chat-header p {
         margin: 5px 0 0;
-        color: #777;
+        color: #73788c;
         font-size: 13px;
+        line-height: 1.4;
     }
 
     .nj-chat-messages {
-        min-height: 350px;
-        max-height: 55vh;
+        display: flex;
+        flex-direction: column;
+        min-height: 380px;
+        height: min(58vh, 600px);
         overflow-y: auto;
-        padding: 22px;
-        background: #f7f8fc;
-        border: 1px solid #e8e7f3;
-        border-top: 0;
+        overscroll-behavior: contain;
+        padding: 24px;
+        background-color: #f7f8fc;
+        background-image: radial-gradient(#e5e7f0 0.7px, transparent 0.7px);
+        background-size: 18px 18px;
+        scroll-behavior: smooth;
     }
 
     .nj-chat-bubble {
-        max-width: 78%;
+        max-width: min(78%, 560px);
         width: fit-content;
-        padding: 12px 15px;
+        padding: 13px 16px 10px;
         margin-bottom: 14px;
-        border-radius: 14px;
+        border-radius: 18px;
         overflow-wrap: anywhere;
+        line-height: 1.55;
+        animation: nj-chat-appear 0.18s ease-out;
     }
 
     .nj-chat-bubble p {
         margin: 0 0 7px;
         white-space: pre-wrap;
+        overflow-wrap: anywhere;
     }
 
     .nj-chat-bubble time {
         display: block;
         font-size: 11px;
-        opacity: 0.7;
+        line-height: 1.4;
+        opacity: 0.75;
         text-align: right;
     }
 
     .nj-chat-mine {
+        align-self: flex-end;
         margin-left: auto;
         color: #fff;
-        background: #635bff;
-        border-bottom-right-radius: 4px;
+        background: linear-gradient(135deg, #635bff, #5145e5);
+        border-bottom-right-radius: 5px;
+        box-shadow: 0 3px 8px rgba(99, 91, 255, 0.12);
     }
 
     .nj-chat-theirs {
+        align-self: flex-start;
         margin-right: auto;
-        color: #252344;
+        color: #282b40;
         background: #fff;
-        border: 1px solid #e8e7f3;
-        border-bottom-left-radius: 4px;
+        border: 1px solid #e8eaf2;
+        border-bottom-left-radius: 5px;
+        box-shadow: 0 3px 8px rgba(31, 41, 55, 0.04);
     }
 
     .nj-chat-form {
         display: flex;
-        gap: 10px;
-        padding: 16px;
+        align-items: flex-end;
+        gap: 12px;
+        padding: 18px 20px;
         background: #fff;
-        border: 1px solid #e8e7f3;
-        border-top: 0;
-        border-radius: 0 0 14px 14px;
+        border-top: 1px solid #edf0f5;
     }
 
     .nj-chat-form textarea {
         flex: 1;
         min-width: 0;
-        min-height: 46px;
-        max-height: 120px;
-        padding: 12px;
-        border: 1px solid #dcdbea;
-        border-radius: 10px;
+        min-height: 48px;
+        max-height: 140px;
+        padding: 13px 15px;
+        color: #25283b;
+        background: #f8f9fc;
+        border: 1px solid #dfe3ee;
+        border-radius: 14px;
         resize: vertical;
         font: inherit;
+        line-height: 1.5;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .nj-chat-form textarea::placeholder {
+        color: #9297a8;
+    }
+
+    .nj-chat-form textarea:focus {
+        outline: none;
+        background: #fff;
+        border-color: #817aff;
+        box-shadow: 0 0 0 3px rgba(99, 91, 255, 0.1);
     }
 
     .nj-chat-form button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         align-self: flex-end;
-        padding: 12px 20px;
+        min-height: 48px;
+        padding: 0 23px;
         color: #fff;
         background: #635bff;
         border: 0;
-        border-radius: 10px;
+        border-radius: 13px;
         cursor: pointer;
+        font: inherit;
         font-weight: 600;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .nj-chat-form button:hover:not(:disabled) {
+        background: #5145e5;
+        transform: translateY(-1px);
     }
 
     .nj-chat-form button:disabled {
         opacity: 0.6;
         cursor: not-allowed;
+        transform: none;
     }
 
     .nj-chat-notice {
-        padding: 20px;
+        padding: 16px;
+        margin: 0;
+        color: #73788c;
         text-align: center;
-        color: #777;
+        font-size: 14px;
+        line-height: 1.6;
     }
 
     .nj-chat-error {
         color: #b42318;
+        background: #fff5f5;
+    }
+
+    @keyframes nj-chat-appear {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     @media (max-width: 600px) {
         .nj-chat-page {
-            padding: 10px;
-            margin: 15px auto;
+            width: 100%;
+            margin: 0;
+            min-height: 100dvh;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        .nj-chat-header {
+            gap: 10px;
+            padding: 14px 12px;
+        }
+
+        .nj-chat-back {
+            padding: 9px;
+            font-size: 12px;
+        }
+
+        .nj-chat-avatar {
+            width: 42px;
+            height: 42px;
+            font-size: 18px;
+        }
+
+        .nj-chat-header h1 {
+            font-size: 16px;
         }
 
         .nj-chat-messages {
+            flex: 1;
+            height: auto;
             min-height: 300px;
-            padding: 14px;
+            max-height: none;
+            padding: 18px 12px;
+        }
+
+        .nj-chat-bubble {
+            max-width: 88%;
+            padding: 11px 13px 9px;
+            font-size: 14px;
         }
 
         .nj-chat-form {
-            padding: 10px;
+            gap: 8px;
+            padding: 12px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+        }
+
+        .nj-chat-form textarea {
+            min-height: 46px;
+            padding: 11px;
+            font-size: 16px;
         }
 
         .nj-chat-form button {
-            padding: 12px;
+            min-height: 46px;
+            padding: 0 16px;
+            font-size: 14px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .nj-chat-bubble {
+            animation: none;
+        }
+
+        .nj-chat-messages {
+            scroll-behavior: auto;
+        }
+
+        .nj-chat-back,
+        .nj-chat-form button {
+            transition: none;
         }
     }
 </style>

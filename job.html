@@ -19,9 +19,23 @@
 <body class="nj-dashboard-body nj-job-details-body">
 
     <div class="nj-dashboard-shell">
+        
+<!-- MOBILE SIDEBAR BUTTON -->
+<button
+    type="button"
+    class="nj-menu-toggle"
+    id="nj-menu-toggle"
+    aria-label="Open navigation menu"
+    aria-controls="nj-sidebar"
+    aria-expanded="false">
+    ☰
+</button>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="nj-sidebar-overlay" id="nj-sidebar-overlay"></div>
 
         <!-- SIDEBAR -->
-        <aside class="nj-sidebar">
+        <aside class="nj-sidebar" id="nj-sidebar">
 
             <a href="dashboard.html" class="nj-brand">
                 Naija<span>Jobs</span>
@@ -54,6 +68,11 @@
                 <a href="messages.html" class="nj-side-link">
                     <span class="nj-nav-icon">✉</span>
                     <span>Messages</span>
+                </a>
+
+                <a href="notifications.html" class="nj-side-link">
+                    <span class="nj-side-icon">♧</span>
+                    Notifications
                 </a>
 
                 <a href="profile.html" class="nj-side-link">

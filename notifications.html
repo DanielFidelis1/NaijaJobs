@@ -21,9 +21,23 @@
 
     <!-- DASHBOARD LAYOUT -->
     <div class="nj-notifications-layout">
+        
+<!-- MOBILE SIDEBAR BUTTON -->
+<button
+    type="button"
+    class="nj-menu-toggle"
+    id="nj-menu-toggle"
+    aria-label="Open navigation menu"
+    aria-controls="nj-sidebar"
+    aria-expanded="false">
+    ☰
+</button>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="nj-sidebar-overlay" id="nj-sidebar-overlay"></div>
 
         <!-- SIDEBAR -->
-        <aside class="nj-notifications-sidebar">
+         <aside class="nj-sidebar" id="nj-sidebar">
 
             <a href="dashboard.html" class="nj-notifications-brand">
                 Naija<span>Jobs</span>
@@ -44,9 +58,11 @@
                     Find Jobs
                 </a>
 
-                <a href="my-jobs.html" class="nj-notifications-link">
-                    <span>▤</span>
-                    My Jobs
+                <a href="my-jobs.html"
+                class="nj-side-link"
+                id="employer-my-jobs-link">
+                    <span class="nj-side-icon">▣</span>
+                    <span>My Jobs</span>
                 </a>
 
                 <a href="applications.html" class="nj-notifications-link">
@@ -67,7 +83,7 @@
                 </a>
 
                 <a href="profile.html" class="nj-notifications-link">
-                    <span>◉</span>
+                    <span>♙</span>
                     My Profile
                 </a>
 
@@ -92,17 +108,10 @@
             <header class="nj-notifications-topbar">
 
                 <div>
-                    <p class="nj-notifications-breadcrumb">
-                        Workspace / Notifications
-                    </p>
                     <h1>Notifications</h1>
                 </div>
 
-                <a href="profile.html"
-                   class="nj-notifications-profile-link">
-                    <span class="nj-notifications-avatar">NJ</span>
-                    <span>My Profile</span>
-                </a>
+                
 
             </header>
 

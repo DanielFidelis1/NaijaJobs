@@ -440,7 +440,12 @@ if (
 
         if (error) {
 
-            console.error("Job posting error:", error);
+            console.error("Job posting error details:", {
+    message: error?.message,
+    code: error?.code,
+    details: error?.details,
+    hint: error?.hint
+});
 
             message.textContent =
                 "Could not post your job: " + error.message;
@@ -497,16 +502,20 @@ async function loadJobs() {
 
     try {
 
-        const {
-            data: jobs,
-            error
-        } = await supabaseClient
-            .from("jobs")
-            .select("*")
-            .eq("status", "open")
-            .order("created_at", {
-                ascending: false
-            });
+        
+
+const {
+    data: jobs,
+    error
+} = await supabaseClient
+    .from("jobs")
+    .select("*")
+    .eq("status", "open")
+    .is("archived_at", null)
+    .order("created_at", {
+        ascending: false
+    });
+
 
 
         if (error) {
@@ -1000,8 +1009,7 @@ applyButton.addEventListener(
                                 job_id: job.id,
                                 user_id: user.id,
                                 cover_message:
-                                    coverMessage,
-                                status: "pending"
+                                    coverMessage
                             }
                         ]);
 
@@ -1086,6 +1094,103 @@ applyButton.addEventListener(
 loadJobDetails();
 
 
+}
+
+/* =========================================
+   OPEN OR CREATE ACCEPTED APPLICATION CHAT
+========================================= */
+
+async function openAcceptedApplicationConversation(applicationId) {
+    try {
+        const {
+            data: { user },
+            error: authError
+        } = await supabaseClient.auth.getUser();
+
+        if (authError || !user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        // Load the application and the employer who owns the job.
+        const { data: application, error: applicationError } =
+            await supabaseClient
+                .from("applications")
+                .select(`
+                    id,
+                    user_id,
+                    job_id,
+                    status,
+                    jobs (
+                        user_id
+                    )
+                `)
+                .eq("id", applicationId)
+                .maybeSingle();
+
+        if (applicationError) throw applicationError;
+
+        if (!application || application.status !== "accepted") {
+            alert("Messaging is available only after an application is accepted.");
+            return;
+        }
+
+        const employerId = application.jobs?.user_id;
+        const seekerId = application.user_id;
+
+        // Only the applicant or the job's owner can open this chat.
+        if (user.id !== seekerId && user.id !== employerId) {
+            alert("You are not authorized to access this conversation.");
+            return;
+        }
+
+        const otherUserId =
+            user.id === seekerId ? employerId : seekerId;
+            
+console.log("NaijaJobs conversation diagnostic:", {
+    signedInUserId: user.id,
+    applicationId: application.id,
+    applicationStatus: application.status,
+    jobSeekerId: seekerId,
+    employerId: employerId,
+    signedInUserIsJobSeeker: user.id === seekerId,
+    signedInUserIsEmployer: user.id === employerId,
+    participantOne: user.id,
+    participantTwo: otherUserId
+});
+
+
+        if (!otherUserId || otherUserId === user.id) {
+            alert("The other participant could not be identified.");
+            return;
+        }
+
+        
+        const { data: conversationId, error: openError } =
+            await supabaseClient.rpc(
+                "open_accepted_application_conversation",
+                {
+                    p_application_id: application.id
+                }
+            );
+
+        if (openError) throw openError;
+
+        if (!conversationId) {
+            throw new Error("No conversation ID was returned.");
+        }
+
+        window.location.href =
+            `message.html?conversation=${encodeURIComponent(conversationId)}`;
+
+    } catch (error) {
+        console.error("Could not open application conversation:", error);
+
+        alert(
+            error.message ||
+            "Could not open the conversation. Please try again."
+        );
+    }
 }
 
 /* ========================================
@@ -1209,23 +1314,31 @@ if (applicationsContainer) {
                 data: applications,
                 error
             } = await supabaseClient
-                .from("applications")
-                .select(`
-                    id,
-                    job_id,
-                    cover_message,
-                    status,
-                    created_at,
-                    jobs (
-                        id,
-                        title,
-                        category,
-                        budget,
-                        location,
-                        job_type,
-                        deadline
-                    )
-                `)
+                
+.from("applications")
+.select(`
+    id,
+    job_id,
+    cover_message,
+    status,
+    created_at,
+    client_completed_at,
+    job_seeker_completed_at,
+    completed_at,
+    payment_status,
+    jobs (
+        id,
+        title,
+        category,
+        budget,
+        location,
+        job_type,
+        deadline,
+        user_id,
+        archived_at
+    )
+`)
+
                 .eq("user_id", user.id)
                 .order("created_at", {
                     ascending: false
@@ -1356,14 +1469,40 @@ if (applicationsContainer) {
                     </p>
 
 
-                    <a
-                        href="job.html?id=${encodeURIComponent(job.id)}"
-                        class="job-button"
-                    >
-                        View Job
-                    </a>
+                    
+<a
+    href="job.html?id=${encodeURIComponent(job.id)}"
+    class="job-button"
+>
+    View Job
+</a>
+
+${
+    application.status === "accepted"
+        ? `
+            <button
+                type="button"
+                class="job-button nj-message-employer-button"
+            >
+                Message Employer
+            </button>
+        `
+        : ""
+}
+
 
                 `;
+                
+const messageButton = card.querySelector(
+    ".nj-message-employer-button"
+);
+
+if (messageButton) {
+    messageButton.addEventListener("click", function () {
+        openAcceptedApplicationConversation(application.id);
+    });
+}
+
 
 
                 applicationsContainer.appendChild(card);
@@ -2021,24 +2160,38 @@ async function loadApplicants() {
                         ).toLocaleDateString()}
 
                     </p>
-
-
+                    
                     <div class="applicant-actions">
 
-                        <button
-                            class="accept-applicant"
-                            data-application-id="${application.id}"
-                        >
-                            Accept
-                        </button>
+                        ${
+                            status === "accepted"
+                                ? `
+                                    <button
+                                        type="button"
+                                        class="job-button nj-message-applicant-button"
+                                        data-application-id="${application.id}"
+                                    >
+                                        Message Applicant
+                                    </button>
+                                `
+                                : `
+                                    <button
+                                        type="button"
+                                        class="accept-applicant"
+                                        data-application-id="${application.id}"
+                                    >
+                                        Accept
+                                    </button>
 
-
-                        <button
-                            class="reject-applicant"
-                            data-application-id="${application.id}"
-                        >
-                            Reject
-                        </button>
+                                    <button
+                                        type="button"
+                                        class="reject-applicant"
+                                        data-application-id="${application.id}"
+                                    >
+                                        Reject
+                                    </button>
+                                `
+                        }
 
                     </div>
 
@@ -2048,6 +2201,21 @@ async function loadApplicants() {
                 applicantsContainer.appendChild(
                     card
                 );
+                                const messageApplicantButton =
+                    card.querySelector(
+                        ".nj-message-applicant-button"
+                    );
+
+                if (messageApplicantButton) {
+                    messageApplicantButton.addEventListener(
+                        "click",
+                        function () {
+                            openAcceptedApplicationConversation(
+                                application.id
+                            );
+                        }
+                    );
+                }
 
             }
         );
@@ -2767,36 +2935,36 @@ if (profileForm) {
                     "Please enter your full name and select your account type.";
                 return;
             }
+                
+const {
+    data: savedProfile,
+    error
+} = await supabaseClient
+    .from("profiles")
+    .update({
+        full_name: fullName,
+        location: location || null,
+        skills: skills || null,
+        bio: bio || null
+    })
+    .eq("id", user.id)
+    .select("id, full_name, location, skills, bio, account_type")
+    .maybeSingle();
 
-            const {
-                data: savedProfile,
-                error
-            } = await supabaseClient
-                .from("profiles")
-                .update({
-                    full_name: fullName,
-                    account_type: accountType,
-                    location: location || null,
-                    skills: skills || null,
-                    bio: bio || null
-                })
-                .eq("id", user.id)
-                .select("id, full_name, location, skills, bio, account_type")
-                .maybeSingle();
+if (error) {
+    console.error("Save profile error:", error);
 
-            if (error) {
-                console.error("Save profile error:", error);
+    profileMessage.textContent =
+        "Could not save your profile. Check your Supabase permissions.";
+    return;
+}
 
-                profileMessage.textContent =
-                    "Could not save your profile. Check your Supabase permissions.";
-                return;
-            }
+if (!savedProfile) {
+    profileMessage.textContent =
+        "Your profile was not updated. Check that your profile exists and you have permission to update it.";
+    return;
+}
 
-            if (!savedProfile) {
-                profileMessage.textContent =
-                    "Your profile was not updated. Check that your profile exists and you have permission to update it.";
-                return;
-            }
 
             const displayName =
                 document.getElementById("profile-display-name");
@@ -2916,11 +3084,13 @@ try {
 
     const conversationIds = conversations.map(item => item.id);
 
-    const { data: messages, error: messagesError } = await supabaseClient
-        .from("messages")
-        .select("conversation_id, content, sender_id, created_at")
-        .in("conversation_id", conversationIds)
-        .order("created_at", { ascending: false });
+    
+const { data: messages, error: messagesError } = await supabaseClient
+    .from("messages")
+    .select("conversation_id, content, sender_id, created_at, read_at")
+    .in("conversation_id", conversationIds)
+    .order("created_at", { ascending: false });
+
 
     if (messagesError) throw messagesError;
 
@@ -2932,7 +3102,43 @@ try {
         }
     });
 
-    container.innerHTML = conversations.map(conversation => {
+    
+const unreadCountMap = new Map();
+let totalUnread = 0;
+
+(messages || []).forEach(message => {
+    if (
+        message.sender_id !== user.id &&
+        message.read_at === null
+    ) {
+        const currentCount =
+            unreadCountMap.get(message.conversation_id) || 0;
+
+        unreadCountMap.set(
+            message.conversation_id,
+            currentCount + 1
+        );
+
+        totalUnread++;
+    }
+});
+
+
+    container.innerHTML = `
+    ${
+        totalUnread > 0
+            ? `
+                <div class="nj-unread-summary">
+                    You have
+                    <strong>${totalUnread}</strong>
+                    unread message${totalUnread === 1 ? "" : "s"}.
+                </div>
+            `
+            : ""
+    }
+
+    ${conversations.map(conversation => {
+
         const otherUserId =
             conversation.participant_one === user.id
                 ? conversation.participant_two
@@ -2964,6 +3170,17 @@ try {
                 <div class="nj-conversation-info">
                     <h3>${escapeHTML(name)}</h3>
                     <p>${escapeHTML(preview)}</p>
+
+${
+    (unreadCountMap.get(conversation.id) || 0) > 0
+        ? `
+            <span class="nj-unread-badge">
+                ${unreadCountMap.get(conversation.id)}
+                unread
+            </span>
+        `
+        : ""
+}
                 </div>
 
                 <span class="nj-conversation-time">
@@ -2971,7 +3188,8 @@ try {
                 </span>
             </a>
         `;
-    }).join("");
+    }).join("")}
+`;
 
 } catch (error) {
     console.error("Error loading messages inbox:", error);
@@ -2987,229 +3205,553 @@ try {
 }
 
 loadMessagesInbox();
+
 /* =========================================
-NAIJAJOBS - CHAT FUNCTIONALITY
+   NAIJAJOBS - REAL-TIME INBOX
+========================================= */
+
+let naijaJobsInboxChannel = null;
+let inboxRefreshTimeout = null;
+
+async function initializeNaijaJobsRealtimeInbox() {
+    const container =
+        document.getElementById("messages-container");
+
+    // Only run on messages.html
+    if (!container) return;
+
+    try {
+        const {
+            data: { user },
+            error
+        } = await supabaseClient.auth.getUser();
+
+        if (error) throw error;
+
+        if (!user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        // Load the inbox initially.
+        await loadMessagesInbox();
+
+        // Prevent duplicate subscriptions.
+        if (naijaJobsInboxChannel) {
+            await supabaseClient.removeChannel(
+                naijaJobsInboxChannel
+            );
+        }
+
+        function scheduleInboxRefresh() {
+            // Combine closely spaced events into one refresh.
+            clearTimeout(inboxRefreshTimeout);
+
+            inboxRefreshTimeout = setTimeout(() => {
+                loadMessagesInbox().catch(error => {
+                    console.error(
+                        "Real-time inbox refresh failed:",
+                        error
+                    );
+                });
+            }, 300);
+        }
+
+        
+console.log(
+    "Creating inbox channel for user:",
+    user.id
+);
+
+naijaJobsInboxChannel = supabaseClient
+    .channel("naijajobs-inbox-" + user.id)
+
+    // Listen for new messages.
+    .on(
+        "postgres_changes",
+        {
+            event: "INSERT",
+            schema: "public",
+            table: "messages"
+        },
+        payload => {
+            console.log(
+                "Inbox received a message event:",
+                payload
+            );
+
+            const message = payload.new || payload.old;
+
+            if (
+                message &&
+                message.conversation_id
+            ) {
+                scheduleInboxRefresh();
+            }
+        }
+    )
+
+    // Listen for conversation updates.
+    .on(
+        "postgres_changes",
+        {
+            event: "UPDATE",
+            schema: "public",
+            table: "conversations"
+        },
+        payload => {
+            const conversation = payload.new || payload.old;
+
+            if (
+                conversation &&
+                (
+                    conversation.participant_one === user.id ||
+                    conversation.participant_two === user.id
+                )
+            ) {
+                scheduleInboxRefresh();
+            }
+        }
+    )
+
+    .subscribe((status, error) => {
+        console.log(
+            "Inbox Realtime status:",
+            status,
+            error || ""
+        );
+
+        if (status === "SUBSCRIBED") {
+            console.log(
+                "Inbox subscription is connected."
+            );
+        } else if (
+            status === "CHANNEL_ERROR" ||
+            status === "TIMED_OUT" ||
+            status === "CLOSED"
+        ) {
+            console.error(
+                "Inbox Realtime problem:",
+                status,
+                error
+            );
+        }
+    });
+
+
+        // Clean up when leaving the inbox page.
+        window.addEventListener(
+            "pagehide",
+            () => {
+                clearTimeout(inboxRefreshTimeout);
+
+                if (naijaJobsInboxChannel) {
+                    supabaseClient.removeChannel(
+                        naijaJobsInboxChannel
+                    );
+
+                    naijaJobsInboxChannel = null;
+                }
+            },
+            { once: true }
+        );
+
+    } catch (error) {
+        console.error(
+            "Could not initialize real-time inbox:",
+            error
+        );
+    }
+}
+
+initializeNaijaJobsRealtimeInbox();
+
+/* =========================================
+   NAIJAJOBS - REAL-TIME CHAT
 ========================================= */
 
 async function initializeNaijaJobsChat() {
-const chatMessages = document.getElementById("chat-messages");
-const chatForm = document.getElementById("chat-form");
+    const chatMessages =
+        document.getElementById("chat-messages");
 
-// Only run on message.html
-if (!chatMessages || !chatForm) return;
+    const chatForm =
+        document.getElementById("chat-form");
 
-const chatInput = document.getElementById("chat-input");
-const sendButton = document.getElementById("chat-send");
-const chatName = document.getElementById("chat-name");
-const chatAvatar = document.getElementById("chat-avatar");
-const chatNotice = document.getElementById("chat-notice");
+    // Only run on message.html
+    if (!chatMessages || !chatForm) return;
 
-const params = new URLSearchParams(window.location.search);
-const conversationId = params.get("conversation");
+    const chatInput =
+        document.getElementById("chat-input");
 
-let currentUser;
-let otherUserId;
-let refreshInterval;
-let sending = false;
+    const sendButton =
+        document.getElementById("chat-send");
 
-function showNotice(message, isError = false) {
-    chatNotice.textContent = message;
-    chatNotice.classList.toggle("nj-chat-error", isError);
-}
+    const chatName =
+        document.getElementById("chat-name");
 
-function renderMessages(messages) {
-    chatMessages.replaceChildren();
+    const chatAvatar =
+        document.getElementById("chat-avatar");
 
-    if (!messages || messages.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "nj-chat-notice";
-        empty.textContent = "No messages yet. Send the first message!";
-        chatMessages.appendChild(empty);
-        return;
+    const chatNotice =
+        document.getElementById("chat-notice");
+
+    const chatStatus =
+        document.getElementById("chat-status");
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const conversationId =
+        params.get("conversation");
+
+    let currentUser = null;
+    let sending = false;
+    let realtimeChannel = null;
+
+    function showNotice(message, isError = false) {
+        chatNotice.textContent = message;
+        chatNotice.classList.toggle(
+            "nj-chat-error",
+            isError
+        );
     }
 
-    messages.forEach(message => {
-        const bubble = document.createElement("div");
+    function renderMessages(messages) {
+        chatMessages.replaceChildren();
 
-        bubble.className =
-            "nj-chat-bubble " +
-            (message.sender_id === currentUser.id
-                ? "nj-chat-mine"
-                : "nj-chat-theirs");
+        if (!messages || messages.length === 0) {
+            const empty = document.createElement("div");
 
-        const text = document.createElement("p");
-        text.textContent = message.content;
+            empty.className = "nj-chat-notice";
+            empty.textContent =
+                "No messages yet. Send the first message!";
 
-        const time = document.createElement("time");
-        time.dateTime = message.created_at;
-        time.textContent = new Date(
-            message.created_at
-        ).toLocaleString();
+            chatMessages.appendChild(empty);
+            return;
+        }
 
-        bubble.append(text, time);
-        chatMessages.appendChild(bubble);
-    });
+        messages.forEach(message => {
+            const bubble =
+                document.createElement("div");
 
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+            bubble.className =
+                "nj-chat-bubble " +
+                (message.sender_id === currentUser.id
+                    ? "nj-chat-mine"
+                    : "nj-chat-theirs");
 
-async function loadChatMessages() {
-    const { data, error } = await supabaseClient
-        .from("messages")
-        .select("id, sender_id, content, created_at")
-        .eq("conversation_id", conversationId)
-        .order("created_at", { ascending: true });
+            const text = document.createElement("p");
+            text.textContent = message.content;
 
-    if (error) throw error;
+            const time = document.createElement("time");
+            time.dateTime = message.created_at;
+            time.textContent = new Date(
+                message.created_at
+            ).toLocaleString();
 
-    renderMessages(data);
-}
+            bubble.append(text, time);
+            chatMessages.appendChild(bubble);
+        });
 
-try {
-    if (!conversationId) {
-        chatMessages.textContent =
-            "No conversation selected. Return to your inbox and open a conversation.";
-        chatForm.hidden = true;
-        return;
+        chatMessages.scrollTop =
+            chatMessages.scrollHeight;
     }
 
-    const {
-        data: { user },
-        error: authError
-    } = await supabaseClient.auth.getUser();
+    async function loadChatMessages() {
+        const { data, error } = await supabaseClient
+            .from("messages")
+            .select(
+                "id, sender_id, content, created_at, read_at"
+            )
+            .eq("conversation_id", conversationId)
+            .order("created_at", { ascending: true });
 
-    if (authError) throw authError;
+        if (error) throw error;
 
-    if (!user) {
-        window.location.href = "login.html";
-        return;
+        renderMessages(data);
+
+        // Mark incoming messages as read.
+        const { error: readError } =
+            await supabaseClient.rpc(
+                "mark_conversation_messages_read",
+                {
+                    p_conversation_id: conversationId
+                }
+            );
+
+        if (readError) {
+            console.error(
+                "Could not mark messages as read:",
+                readError
+            );
+        }
     }
 
-    currentUser = user;
+    try {
+        if (!conversationId) {
+            chatMessages.textContent =
+                "No conversation selected. Return to your inbox and open a conversation.";
 
-    const { data: conversation, error: conversationError } =
-        await supabaseClient
+            chatForm.hidden = true;
+            return;
+        }
+
+        // Check authentication.
+        const {
+            data: { user },
+            error: authError
+        } = await supabaseClient.auth.getUser();
+
+        if (authError) throw authError;
+
+        if (!user) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        currentUser = user;
+
+        // Verify conversation access.
+        const {
+            data: conversation,
+            error: conversationError
+        } = await supabaseClient
             .from("conversations")
-            .select("id, participant_one, participant_two")
+            .select(
+                "id, participant_one, participant_two"
+            )
             .eq("id", conversationId)
             .maybeSingle();
 
-    if (conversationError) throw conversationError;
+        if (conversationError) {
+            throw conversationError;
+        }
 
-    if (!conversation) {
-        chatMessages.textContent =
-            "Conversation not found or access denied.";
-        chatForm.hidden = true;
-        return;
-    }
+        if (!conversation) {
+            chatMessages.textContent =
+                "Conversation not found or access denied.";
 
-    if (
-        conversation.participant_one !== user.id &&
-        conversation.participant_two !== user.id
-    ) {
-        chatMessages.textContent =
-            "You don't have permission to access this conversation.";
-        chatForm.hidden = true;
-        return;
-    }
+            chatForm.hidden = true;
+            return;
+        }
 
-    otherUserId =
-        conversation.participant_one === user.id
-            ? conversation.participant_two
-            : conversation.participant_one;
+        if (
+            conversation.participant_one !== user.id &&
+            conversation.participant_two !== user.id
+        ) {
+            chatMessages.textContent =
+                "You don't have permission to access this conversation.";
 
-    const { data: profile, error: profileError } =
-        await supabaseClient
+            chatForm.hidden = true;
+            return;
+        }
+
+        const otherUserId =
+            conversation.participant_one === user.id
+                ? conversation.participant_two
+                : conversation.participant_one;
+
+        // Load the other participant's name.
+        const {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
             .from("profiles")
             .select("full_name")
             .eq("id", otherUserId)
             .maybeSingle();
 
-    if (profileError) throw profileError;
+        if (profileError) throw profileError;
 
-    const name = profile?.full_name || "NaijaJobs user";
-    chatName.textContent = name;
-    chatAvatar.textContent = name.charAt(0).toUpperCase();
+        const name =
+            profile?.full_name || "NaijaJobs user";
 
-    await loadChatMessages();
+        chatName.textContent = name;
+        chatAvatar.textContent =
+            name.charAt(0).toUpperCase();
 
-    // Refresh to check for new messages
-    refreshInterval = setInterval(async () => {
-        try {
-            await loadChatMessages();
-        } catch (error) {
-            console.error("Unable to refresh messages:", error);
-        }
-    }, 5000);
+        // Subscribe to new messages in THIS conversation.
+        realtimeChannel = supabaseClient
+            .channel(
+                "nj-chat-" + conversationId
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "messages",
+                    filter:
+                        "conversation_id=eq." +
+                        conversationId
+                },
+                async (payload) => {
+                    // Ignore events without a new message.
+                    if (!payload.new) return;
 
-    chatForm.addEventListener("submit", async function(event) {
-        event.preventDefault();
+                    try {
+                        await loadChatMessages();
+                    } catch (error) {
+                        console.error(
+                            "Could not load real-time message:",
+                            error
+                        );
 
-        if (sending) return;
+                        showNotice(
+                            "A new message arrived, but the chat could not refresh. Please reload the page.",
+                            true
+                        );
+                    }
+                }
+            )
+            .subscribe((status, error) => {
+                if (status === "SUBSCRIBED") {
+                    if (chatStatus) {
+                        chatStatus.textContent =
+                            "Connected · Live updates";
+                    }
 
-        const content = chatInput.value.trim();
+                    showNotice("");
+                    console.log(
+                        "NaijaJobs Realtime connected."
+                    );
+                } else if (
+                    status === "CHANNEL_ERROR" ||
+                    status === "TIMED_OUT"
+                ) {
+                    if (chatStatus) {
+                        chatStatus.textContent =
+                            "Live connection unavailable";
+                    }
 
-        if (!content) {
-            showNotice("Please type a message first.", true);
-            return;
-        }
+                    showNotice(
+                        "Live updates are unavailable. Check your connection or reload the page.",
+                        true
+                    );
 
-        sending = true;
-        sendButton.disabled = true;
-        showNotice("");
+                    console.error(
+                        "Realtime subscription issue:",
+                        status,
+                        error
+                    );
+                }
+            });
 
-        try {
-            const { error: insertError } = await supabaseClient
-                .from("messages")
-                .insert({
-                    conversation_id: conversationId,
-                    sender_id: currentUser.id,
-                    content: content
-                });
+        // Load existing messages when chat opens.
+        await loadChatMessages();
 
-            if (insertError) throw insertError;
+        // Send messages.
+        chatForm.addEventListener(
+            "submit",
+            async function(event) {
+                event.preventDefault();
 
-            chatInput.value = "";
-            await loadChatMessages();
+                if (sending) return;
 
-            const { error: updateError } = await supabaseClient
-                .from("conversations")
-                .update({
-                    updated_at: new Date().toISOString()
-                })
-                .eq("id", conversationId);
+                const content =
+                    chatInput.value.trim();
 
-            if (updateError) {
-                console.warn("Conversation timestamp update failed:", updateError);
+                if (!content) {
+                    showNotice(
+                        "Please type a message first.",
+                        true
+                    );
+                    return;
+                }
+
+                sending = true;
+                sendButton.disabled = true;
+                showNotice("");
+
+                try {
+                    const { error: insertError } =
+                        await supabaseClient
+                            .from("messages")
+                            .insert({
+                                conversation_id:
+                                    conversationId,
+                                sender_id:
+                                    currentUser.id,
+                                content: content
+                            });
+
+                    if (insertError) {
+                        throw insertError;
+                    }
+
+                    chatInput.value = "";
+
+                    // The Realtime event will refresh the chat.
+                    // Also refresh locally so your own message
+                    // appears immediately after a successful send.
+                    await loadChatMessages();
+
+                    const { error: updateError } =
+                        await supabaseClient
+                            .from("conversations")
+                            .update({
+                                updated_at:
+                                    new Date().toISOString()
+                            })
+                            .eq("id", conversationId);
+
+                    if (updateError) {
+                        console.warn(
+                            "Conversation timestamp update failed:",
+                            updateError
+                        );
+                    }
+                } catch (error) {
+                    console.error(
+                        "Failed to send message:",
+                        error
+                    );
+
+                    showNotice(
+                        error.message ||
+                        "Message could not be sent. Please try again.",
+                        true
+                    );
+                } finally {
+                    sending = false;
+                    sendButton.disabled = false;
+                }
             }
-        } catch (error) {
-            console.error("Failed to send message:", error);
-            showNotice(
-                error.message || "Message could not be sent. Please try again.",
-                true
-            );
-        } finally {
-            sending = false;
-            sendButton.disabled = false;
-        }
-    });
+        );
 
-} catch (error) {
-    console.error("Chat initialization failed:", error);
+        // Remove the subscription when leaving the page.
+        window.addEventListener(
+            "pagehide",
+            () => {
+                if (realtimeChannel) {
+                    supabaseClient.removeChannel(
+                        realtimeChannel
+                    );
 
-    chatMessages.textContent =
-        "Couldn't load this conversation. Please refresh and try again.";
+                    realtimeChannel = null;
+                }
+            },
+            { once: true }
+        );
 
-    showNotice(
-        error.message || "An unexpected error occurred.",
-        true
-    );
-}
+    } catch (error) {
+        console.error(
+            "Chat initialization failed:",
+            error
+        );
 
+        chatMessages.textContent =
+            "Couldn't load this conversation. Please refresh and try again.";
+
+        showNotice(
+            error.message ||
+            "An unexpected error occurred.",
+            true
+        );
+    }
 }
 
 initializeNaijaJobsChat();
-
 
 /* =========================================
    NAIJAJOBS - ADMIN DASHBOARD
@@ -3997,3 +4539,190 @@ loadAdminActivity
 
 loadAdminActivity();
 
+
+/* =================================
+   NAIJAJOBS MOBILE SIDEBAR TOGGLE
+   ================================= */
+
+(() => {
+    const sidebar = document.getElementById("nj-sidebar");
+    const toggle = document.getElementById("nj-menu-toggle");
+    const overlay = document.getElementById("nj-sidebar-overlay");
+
+    if (!sidebar || !toggle || !overlay) {
+        return;
+    }
+
+    function openSidebar() {
+        sidebar.classList.add("nj-sidebar-open");
+        overlay.classList.add("nj-overlay-visible");
+        document.body.classList.add("nj-sidebar-active");
+
+        toggle.setAttribute("aria-expanded", "true");
+        toggle.setAttribute("aria-label", "Close navigation menu");
+        toggle.textContent = "×";
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove("nj-sidebar-open");
+        overlay.classList.remove("nj-overlay-visible");
+        document.body.classList.remove("nj-sidebar-active");
+
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.setAttribute("aria-label", "Open navigation menu");
+        toggle.textContent = "☰";
+    }
+
+    toggle.addEventListener("click", () => {
+        if (sidebar.classList.contains("nj-sidebar-open")) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    });
+
+    overlay.addEventListener("click", closeSidebar);
+
+    sidebar.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", closeSidebar);
+    });
+
+    document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+            closeSidebar();
+        }
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 768) {
+            closeSidebar();
+        }
+    });
+})();
+
+/* =========================================
+   NAIJAJOBS - EMPLOYER POSTING ACCESS
+========================================= */
+
+async function checkEmployerPostingAccess() {
+    const postingForm = document.getElementById("post-job-form");
+
+    const employerElements = [
+        "employer-my-jobs-link",
+        "employer-post-job-link",
+        "employer-my-jobs-card",
+        "employer-post-job-card"
+    ];
+
+    // Check whether this page contains employer-only links.
+    const hasEmployerElements = employerElements.some(id =>
+        document.getElementById(id)
+    );
+
+    // No need to run on unrelated pages.
+    if (!postingForm && !hasEmployerElements) return;
+
+    try {
+        const {
+            data: { user },
+            error: authError
+        } = await supabaseClient.auth.getUser();
+
+        if (authError || !user) {
+            if (postingForm) {
+                window.location.replace("login.html");
+            }
+            return;
+        }
+
+        // Preserve administrator access.
+        const { data: admin, error: adminError } =
+            await supabaseClient
+                .from("admin_users")
+                .select("user_id")
+                .eq("user_id", user.id)
+                .maybeSingle();
+
+        if (adminError) throw adminError;
+
+        if (admin) {
+            return;
+        }
+
+        // Get the user's role, approval and suspension status.
+        const { data: profile, error: profileError } =
+            await supabaseClient
+                .from("profiles")
+                .select("account_type, employer_status, is_suspended")
+                .eq("id", user.id)
+                .maybeSingle();
+
+        if (profileError) throw profileError;
+
+        if (!profile || profile.is_suspended === true) {
+            await supabaseClient.auth.signOut();
+            window.location.replace("login.html");
+            return;
+        }
+
+        const isApprovedEmployer =
+            profile.account_type === "client" &&
+            profile.employer_status === "approved";
+
+        // Hide employer-only links from everyone who is
+        // not an approved employer.
+        if (!isApprovedEmployer) {
+            employerElements.forEach(id => {
+                const element = document.getElementById(id);
+
+                if (element) {
+                    element.style.display = "none";
+                }
+            });
+        }
+
+        // Protect the posting page from direct navigation.
+        if (postingForm && !isApprovedEmployer) {
+            postingForm.hidden = true;
+
+            const message = document.createElement("p");
+            message.textContent =
+                profile.account_type === "client"
+                    ? "Your employer account must be approved before you can post jobs."
+                    : "Job seekers cannot post jobs. You can browse jobs and apply.";
+
+            message.style.cssText =
+                "padding:20px;margin:20px 0;background:#f3f4f6;" +
+                "border-radius:10px;color:#333;";
+
+            postingForm.parentNode.insertBefore(
+                message,
+                postingForm
+            );
+
+            return;
+        }
+
+    } catch (error) {
+        console.error(
+            "Employer posting access check failed:",
+            error
+        );
+
+        // Fail closed on the posting page.
+        if (postingForm) {
+            postingForm.hidden = true;
+
+            const message = document.createElement("p");
+            message.textContent =
+                "We couldn't verify your posting permissions. Please refresh or contact support.";
+
+            postingForm.parentNode.insertBefore(
+                message,
+                postingForm
+            );
+        }
+    }
+}
+
+checkEmployerPostingAccess();
